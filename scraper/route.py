@@ -1,7 +1,6 @@
 import requests
 from bs4 import BeautifulSoup
 
-
 def parse_index(soup, book_idx, url):
     all_chapter = []
 
@@ -44,18 +43,38 @@ def route(url):
 
     book_idx = find_index(url)
     if 'kanunu' in url or 'ty2016' in url or '99lib' in url:
-        parse_index(soup, book_idx, url)
-    else:
-        print ('only accept url from kanunu/ tianya/ 99lib')
-        return False
+        return parse_index(soup, book_idx, url)
+    print ('only accept url from kanunu/ tianya/ 99lib')
+    return False
 
 
-kanunu = 'https://www.kanunu8.com/wuxia/201102/1625.html'
-kanunu1 = 'https://www.kanunu8.com/book2/10752/'
-tianya = 'http://www.ty2016.net/book/Murakami_13/'
-lib99 = 'http://www.99lib.net/book/8007/index.htm'
+# def get_text(soup, source):
+#     # if source == 'kanunu':
 
-route(lib99)
+
+
+def text_to_txt(url):
+    all_chapters = route(url)
+    # for link in all_chapters: # test first one
+    #     page = requests.get(link)
+    #     soup = BeautifulSoup(page.content, 'html.parser')
+    #     print (soup.body)
+    page = requests.get('https://www.kanunu8.com/wuxia/201102/1625/37040.html')
+    soup = BeautifulSoup(page.content, 'html.parser')
+    content = soup.body.div.find_all('table')[4].find_all('td')[1].p
+    print (content)
+
+
+
+
+if __name__ == "__main__":
+
+    kanunu = 'https://www.kanunu8.com/wuxia/201102/1625.html'
+    kanunu1 = 'https://www.kanunu8.com/book2/10752/'
+    tianya = 'http://www.ty2016.net/book/Murakami_13/'
+    lib99 = 'http://www.99lib.net/book/8007/index.htm'
+    # kanunu path: /html/body/div/table[5]/tbody/tr/td[2]/p
+    text_to_txt(kanunu)
 
 
 
