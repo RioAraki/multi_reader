@@ -55,14 +55,25 @@ def route(url):
 
 def text_to_txt(url):
     all_chapters = route(url)
+
+    file = open("test.txt","w")
+
     # for link in all_chapters: # test first one
     #     page = requests.get(link)
     #     soup = BeautifulSoup(page.content, 'html.parser')
-    #     print (soup.body)
-    page = requests.get('https://www.kanunu8.com/wuxia/201102/1625/37040.html')
+    #     # title = soup.
+    #     content = soup.body.div.find_all('table')[4].find_all('td')[1].p.getText()
+    #     print (content)
+
+    # chapter 1: "https://www.kanunu8.com/wuxia/201102/1625/37040.html"
+    # chapter 2: "https://www.kanunu8.com/wuxia/201102/1625/37041.html"
+
+    page = requests.get("https://www.kanunu8.com/wuxia/201102/1625/37048.html")
     soup = BeautifulSoup(page.content, 'html.parser')
-    content = soup.body.div.find_all('table')[4].find_all('td')[1].p
-    print (content)
+    content = soup.body.div.find_all('table')[4].find_all('td')[1].p.getText()
+    print (content.)
+
+
 
 
 
