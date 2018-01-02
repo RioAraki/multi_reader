@@ -57,26 +57,32 @@ def route(url):
 def text_to_txt(url):
     all_chapters = route(url)
 
-    file = open("test.txt","w")
+    file = open("test.txt","wb")  # The wb indicates that the file is opened for writing in binary mode.
 
-    # for link in all_chapters: # test first one
-    #     page = requests.get(link)
-    #     soup = BeautifulSoup(page.content, 'html.parser')
-    #     # title = soup.
-    #     content = soup.body.div.find_all('table')[4].find_all('td')[1].p.getText()
-    #     print (content)
+    for link in all_chapters:
+        print (link)
+        res = requests.get(link)
+        res.encoding = 'gb2312'
+        page = re.sub('&nbsp;', ' ', res.text)  # for all text in res, change &nbsp to ' '
+        soup = BeautifulSoup(page, 'html.parser')
+        content = soup.body.div.find_all('table')[4].find_all('td')[1].p.text.encode('utf-8')
+        file.write(content)
+
+    file.close()
 
     # chapter 1: "https://www.kanunu8.com/wuxia/201102/1625/37040.html"
     # chapter 2: "https://www.kanunu8.com/wuxia/201102/1625/37041.html"
 
-    res = requests.get("https://www.kanunu8.com/wuxia/201102/1625/37041.html")
-    res.encoding = 'gb2312'
-    page = re.sub('&nbsp;',' ',res.text) # for all text in res, change &nbsp to ' '
-    # print (page)
-    soup = BeautifulSoup(page, 'html.parser')
-    content = soup.body.div.find_all('table')[4].find_all('td')[1].p.text
-    print (content)
-    file.write(content)
+    # res = requests.get("https://www.kanunu8.com/wuxia/201102/1625/37041.html")
+    # res.encoding='gb2312'
+    # page = re.sub('&nbsp;',' ',res.text) # for all text in res, change &nbsp to ' '
+    # # print (page)
+    # soup = BeautifulSoup(page, 'html.parser')
+    # content = soup.body.div.find_all('table')[4].find_all('td')[1].p.text.encode('utf-8')
+    # file.write(content)
+
+
+
 
 
 
