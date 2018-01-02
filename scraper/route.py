@@ -2,6 +2,22 @@ import requests
 import re
 from bs4 import BeautifulSoup
 
+
+def source(url):
+
+    if 'kanunu' in url:
+        if url.split('/')[-1]:
+            return 'kanunu'
+        else:
+            return 'kanunu1'
+    elif 'ty2016' in url:
+        return 'ty2016'
+    elif '99lib' in url:
+        return '99lib'
+    return False
+
+
+
 def parse_index(soup, book_idx, url):
     all_chapter = []
 
@@ -48,44 +64,27 @@ def route(url):
     print ('only accept url from kanunu/ tianya/ 99lib')
     return False
 
-
-# def get_text(soup, source):
-#     # if source == 'kanunu':
-
-
-
-def text_to_txt(url):
+def write_in(url):
     all_chapters = route(url)
-
     file = open("test.txt","wb")  # The wb indicates that the file is opened for writing in binary mode.
-
     for link in all_chapters:
         print (link)
         res = requests.get(link)
         res.encoding = 'gb2312'
         page = re.sub('&nbsp;', ' ', res.text)  # for all text in res, change &nbsp to ' '
         soup = BeautifulSoup(page, 'html.parser')
-        content = soup.body.div.find_all('table')[4].find_all('td')[1].p.text.encode('utf-8')
-        file.write(content)
+        if source(url) == 'kanunu':
+            content = soup.body.div.find_all('table')[4].find_all('td')[1].p.text.encode('utf-8')
+        elif source(url) == 'kanunu1':
+            content = soup.find_all('p')[0].text.encode('utf-8')
+        elif source(url) == 'ty2016':
+            content = soup.find_all('p')[1].text.encode('utf-8')
+        elif source(url) == '99lib':
+            content = soup.find_all('p')
+            print (content)
+        # file.write(content)
 
     file.close()
-
-    # chapter 1: "https://www.kanunu8.com/wuxia/201102/1625/37040.html"
-    # chapter 2: "https://www.kanunu8.com/wuxia/201102/1625/37041.html"
-
-    # res = requests.get("https://www.kanunu8.com/wuxia/201102/1625/37041.html")
-    # res.encoding='gb2312'
-    # page = re.sub('&nbsp;',' ',res.text) # for all text in res, change &nbsp to ' '
-    # # print (page)
-    # soup = BeautifulSoup(page, 'html.parser')
-    # content = soup.body.div.find_all('table')[4].find_all('td')[1].p.text.encode('utf-8')
-    # file.write(content)
-
-
-
-
-
-
 
 
 
@@ -96,7 +95,7 @@ if __name__ == "__main__":
     tianya = 'http://www.ty2016.net/book/Murakami_13/'
     lib99 = 'http://www.99lib.net/book/8007/index.htm'
     # kanunu path: /html/body/div/table[5]/tbody/tr/td[2]/p
-    text_to_txt(kanunu)
+    write_in(lib99)
 
 
 
