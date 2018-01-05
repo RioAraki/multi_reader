@@ -64,6 +64,27 @@ def route(url):
     print ('only accept url from kanunu/ tianya/ 99lib')
     return False
 
+
+def get_content(soup, source):
+    if source == 'kanunu':
+        content = soup.body.div.find_all('table')[4].find_all('td')[1].p.text  # .encode('utf-8')
+    elif source == 'kanunu1':
+        content = soup.find_all('p')[0].text  # .encode('utf-8')
+    elif source == 'ty2016':
+        content = soup.find_all('p')[1].text.encode('utf-8')
+    elif source == '99lib':
+        content = soup.find_all('p') # TODO: see how to extract lib99's content
+    return content
+
+
+def get_title(soup, source):
+    if source == 'kanunu' or source == 'kanunu1' or source == '99lib':
+        title = soup.body.find_all('h2')[0].text  #.encode('utf-8')
+    elif source == 'ty2016':
+        title = soup.body.find_all('h1')[0].text  #.encode('utf-8')
+    return title
+
+
 def write_in(url):
     all_chapters = route(url)
     file = open("test.txt","wb")  # The wb indicates that the file is opened for writing in binary mode.
@@ -73,22 +94,11 @@ def write_in(url):
         res.encoding = 'gb2312'
         page = re.sub('&nbsp;', ' ', res.text)  # for all text in res, change &nbsp to ' '
         soup = BeautifulSoup(page, 'html.parser')
-        if source(url) == 'kanunu':
-            title = soup.body.find_all('h2')[0].text#.encode('utf-8')
-            content = soup.body.div.find_all('table')[4].find_all('td')[1].p.text#.encode('utf-8')
-        elif source(url) == 'kanunu1':
-            # /html/body/div[1]/table[8]/tbody/tr[1]/td/h2/font
-            title = soup.body.find_all('h2')[0].text#.encode('utf-8')
-            content = soup.find_all('p')[0].text#.encode('utf-8')
-        elif source(url) == 'ty2016':
-            title = soup.body.find_all('h1')[0].text#.encode('utf-8')
-            content = soup.find_all('p')[1].text.encode('utf-8')
-        elif source(url) == '99lib':
-            content = soup.find_all('p')
+        content = get_content(soup, source(url))
+        title = get_title(soup, source())
         print (title)
         print (content)
-        #file.write(content)
-
+        file.write(content)
     file.close()
 
 
