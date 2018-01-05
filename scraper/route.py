@@ -74,15 +74,20 @@ def write_in(url):
         page = re.sub('&nbsp;', ' ', res.text)  # for all text in res, change &nbsp to ' '
         soup = BeautifulSoup(page, 'html.parser')
         if source(url) == 'kanunu':
-            content = soup.body.div.find_all('table')[4].find_all('td')[1].p.text.encode('utf-8')
+            title = soup.body.find_all('h2')[0].text#.encode('utf-8')
+            content = soup.body.div.find_all('table')[4].find_all('td')[1].p.text#.encode('utf-8')
         elif source(url) == 'kanunu1':
-            content = soup.find_all('p')[0].text.encode('utf-8')
+            # /html/body/div[1]/table[8]/tbody/tr[1]/td/h2/font
+            title = soup.body.find_all('h2')[0].text#.encode('utf-8')
+            content = soup.find_all('p')[0].text#.encode('utf-8')
         elif source(url) == 'ty2016':
+            title = soup.body.find_all('h1')[0].text#.encode('utf-8')
             content = soup.find_all('p')[1].text.encode('utf-8')
         elif source(url) == '99lib':
             content = soup.find_all('p')
-            print (content)
-        # file.write(content)
+        print (title)
+        print (content)
+        #file.write(content)
 
     file.close()
 
@@ -92,10 +97,10 @@ if __name__ == "__main__":
 
     kanunu = 'https://www.kanunu8.com/wuxia/201102/1625.html'
     kanunu1 = 'https://www.kanunu8.com/book2/10752/'
-    tianya = 'http://www.ty2016.net/book/Murakami_13/'
+    ty2016 = 'http://www.ty2016.net/book/Murakami_13/'
     lib99 = 'http://www.99lib.net/book/8007/index.htm'
     # kanunu path: /html/body/div/table[5]/tbody/tr/td[2]/p
-    write_in(lib99)
+    write_in(ty2016)
 
 
 
