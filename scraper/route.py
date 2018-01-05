@@ -67,9 +67,9 @@ def route(url):
 
 def get_content(soup, source):
     if source == 'kanunu':
-        content = soup.body.div.find_all('table')[4].find_all('td')[1].p.text  # .encode('utf-8')
+        content = soup.body.div.find_all('table')[4].find_all('td')[1].p.text.encode('utf-8')
     elif source == 'kanunu1':
-        content = soup.find_all('p')[0].text  # .encode('utf-8')
+        content = soup.find_all('p')[0].text.encode('utf-8')
     elif source == 'ty2016':
         content = soup.find_all('p')[1].text.encode('utf-8')
     elif source == '99lib':
@@ -79,29 +79,30 @@ def get_content(soup, source):
 
 def get_title(soup, source):
     if source == 'kanunu' or source == 'kanunu1' or source == '99lib':
-        title = soup.body.find_all('h2')[0].text  #.encode('utf-8')
+        title = soup.body.find_all('h2')[0].text
     elif source == 'ty2016':
-        title = soup.body.find_all('h1')[0].text  #.encode('utf-8')
+        title = soup.body.find_all('h1')[0].text
     return title
 
 
 def write_in(url):
     all_chapters = route(url)
-    file = open("test.txt","wb")  # The wb indicates that the file is opened for writing in binary mode.
+    print(all_chapters)
+    file = open("test.md","wb")  # The wb indicates that the file is opened for writing in binary mode.
     for link in all_chapters:
         print (link)
         res = requests.get(link)
         res.encoding = 'gb2312'
         page = re.sub('&nbsp;', ' ', res.text)  # for all text in res, change &nbsp to ' '
         soup = BeautifulSoup(page, 'html.parser')
+        title = ('##' + get_title(soup, source(url))).encode('utf-8')
         content = get_content(soup, source(url))
-        title = get_title(soup, source())
-        print (title)
-        print (content)
+        file.write(title)
         file.write(content)
     file.close()
 
-
+# TODO: Cannot extract title correctly for kanunu1
+# TODO: index out of range issue when coming to tianya
 
 if __name__ == "__main__":
 
@@ -109,8 +110,8 @@ if __name__ == "__main__":
     kanunu1 = 'https://www.kanunu8.com/book2/10752/'
     ty2016 = 'http://www.ty2016.net/book/Murakami_13/'
     lib99 = 'http://www.99lib.net/book/8007/index.htm'
-    # kanunu path: /html/body/div/table[5]/tbody/tr/td[2]/p
-    write_in(ty2016)
+
+    write_in(kanunu1)
 
 
 
