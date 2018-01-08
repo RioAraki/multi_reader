@@ -17,13 +17,12 @@ def source(url):
     return False
 
 
-
 def parse_index(soup, book_idx, url):
     all_chapter = []
 
     for link in soup.find_all('a'):
         href = link.get('href')
-
+        print (href)
         if url.split('/')[-1]: # format like 'https://www.kanunu8.com/wuxia/201102/1625.html'
             if href and book_idx in href:
                 if book_idx in url:
@@ -35,7 +34,7 @@ def parse_index(soup, book_idx, url):
                     if abs_link not in all_chapter:
                         all_chapter.append(abs_link)
         else: # format like 'https://www.kanunu8.com/book2/10752/'
-            if href and '/' not in href:
+            if href and '/' not in href and '.html' in href:
                 abs_link = url + href
                 all_chapter.append(abs_link)
     return all_chapter
@@ -79,9 +78,9 @@ def get_content(soup, source):
 
 def get_title(soup, source):
     if source == 'kanunu' or source == 'kanunu1' or source == '99lib':
-        title = soup.body.find_all('h2')[0].text
+        title = soup.find_all('h2')[0].text
     elif source == 'ty2016':
-        title = soup.body.find_all('h1')[0].text
+        title = soup.find_all('h1')[0].text
     return title
 
 
@@ -95,14 +94,11 @@ def write_in(url):
         res.encoding = 'gb2312'
         page = re.sub('&nbsp;', ' ', res.text)  # for all text in res, change &nbsp to ' '
         soup = BeautifulSoup(page, 'html.parser')
-        title = ('##' + get_title(soup, source(url))).encode('utf-8')
+        title = ('<br/>##' + get_title(soup, source(url))).encode('utf-8')
         content = get_content(soup, source(url))
         file.write(title)
         file.write(content)
     file.close()
-
-# TODO: Cannot extract title correctly for kanunu1
-# TODO: index out of range issue when coming to tianya
 
 if __name__ == "__main__":
 
@@ -111,7 +107,7 @@ if __name__ == "__main__":
     ty2016 = 'http://www.ty2016.net/book/Murakami_13/'
     lib99 = 'http://www.99lib.net/book/8007/index.htm'
 
-    write_in(kanunu1)
+    write_in(ty2016)
 
 
 
