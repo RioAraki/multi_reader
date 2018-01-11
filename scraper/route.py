@@ -23,7 +23,6 @@ def parse_index(soup, book_idx, url):
 
     for link in soup.find_all('a'):
         href = link.get('href')
-        print (href)
         if url.split('/')[-1]: # format like 'https://www.kanunu8.com/wuxia/201102/1625.html'
             if href and book_idx in href:
                 if book_idx in url:
@@ -67,7 +66,7 @@ def route(url):
 
 def get_content(soup, source):
     if source == 'kanunu':
-        content = soup.body.div.find_all('table')[4].find_all('td')[1].p.text.encode('utf-8')
+        content = soup.body.div.find_all('table')[4].find_all('td')[1].p.text
     elif source == 'kanunu1':
         content = soup.find_all('p')[0].text
     elif source == 'ty2016':
@@ -99,9 +98,14 @@ def write_in_md(url):
         file.write(content)
     file.close()
 
+def br_to_p(text):
+    re.sub('<br><br>', '</p><p>',text)
+    print (text)
+
+
 def get_epub(url):
     all_chapters = route(url)
-    counter = 1
+    counter = 0
     header0 = "<?xml version='1.0' encoding='utf-8' standalone='no'?><!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.1//EN'" \
              " 'http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd'><html xmlns='http://www.w3.org/1999/xhtml'" \
              " xml:lang='zh-CN'><head><title>"
@@ -111,23 +115,34 @@ def get_epub(url):
     tail = "</p><div class='mbppagebreak'></div></body></html>"
 
 
-    for link in all_chapters:
-
-        res = requests.get(link)
-        res.encoding = 'gb2312'
-        page = re.sub('&nbsp;', ' ', res.text)  # for all text in res, change &nbsp to ' '
-        soup = BeautifulSoup(page, 'html.parser')
-        title = (get_title(soup, source(url)))
-        content = get_content(soup, source(url))
-        file_name = 'chapter_' + str(counter) + '.xhtml'
-        epub_content = header0 + title + header1 + h20 + title + h21 + content + tail
-
-        file = open(file_name, "wb")
-        file.write(epub_content.encode('utf-8'))
-        counter += 1
-        file.close
-
-
+    # for link in all_chapters:
+    #     res = requests.get(link)
+    #     res.encoding = 'gb2312'
+    #     page = re.sub('&nbsp;', ' ', res.text)  # for all text in res, change &nbsp to ' '
+    #     soup = BeautifulSoup(page, 'html.parser')
+    #     title = (get_title(soup, source(url)))
+    #     content = get_content(soup, source(url))
+    #     file_name = 'chapter_' + str(counter) + '.xhtml'
+    #     epub_content = header0 + title + header1 + h20 + title + h21 + content + tail
+    #
+    #     file = open(file_name, "wb")
+    #     file.write(epub_content.encode('utf-8'))
+    #     counter += 1
+    #     file.close
+    link = 'http://www.ty2016.net/book/Murakami_13/67710.html'
+    res = requests.get(link)
+    res.encoding = 'gb2312'
+    page = re.sub('&nbsp;', ' ', res.text)  # for all text in res, change &nbsp to ' '
+    page = re.sub('<br />\r\n<br />', '</p><p>', page)
+    print(page)
+    soup = BeautifulSoup(page, 'html.parser')
+    title = (get_title(soup, source(url)))
+    content = get_content(soup, source(url))
+    file_name = 'chapter_' + str(counter) + '.xhtml'
+    epub_content = header0 + title + header1 + h20 + title + h21 + content + tail
+    file = open(file_name, "wb")
+    file.write(epub_content.encode('utf-8'))
+    file.close
 
 
 
