@@ -69,9 +69,9 @@ def get_content(soup, source):
     if source == 'kanunu':
         content = soup.body.div.find_all('table')[4].find_all('td')[1].p.text.encode('utf-8')
     elif source == 'kanunu1':
-        content = soup.find_all('p')[0].text.encode('utf-8')
+        content = soup.find_all('p')[0].text
     elif source == 'ty2016':
-        content = soup.find_all('p')[1].text.encode('utf-8')
+        content = soup.find_all('p')[1].text
     elif source == '99lib':
         content = soup.find_all('p') # TODO: see how to extract lib99's content
     return content
@@ -85,21 +85,51 @@ def get_title(soup, source):
     return title
 
 
-def write_in(url):
+def write_in_md(url):
     all_chapters = route(url)
-    print(all_chapters)
     file = open("test.md","wb")  # The wb indicates that the file is opened for writing in binary mode.
     for link in all_chapters:
-        print (link)
         res = requests.get(link)
         res.encoding = 'gb2312'
         page = re.sub('&nbsp;', ' ', res.text)  # for all text in res, change &nbsp to ' '
         soup = BeautifulSoup(page, 'html.parser')
         title = ('<br/>##' + get_title(soup, source(url))).encode('utf-8')
-        content = get_content(soup, source(url))
+        content = get_content(soup, source(url)).encode('utf-8')
         file.write(title)
         file.write(content)
     file.close()
+
+def get_epub(url):
+    all_chapters = route(url)
+    counter = 1
+    header0 = "<?xml version='1.0' encoding='utf-8' standalone='no'?><!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.1//EN'" \
+             " 'http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd'><html xmlns='http://www.w3.org/1999/xhtml'" \
+             " xml:lang='zh-CN'><head><title>"
+    header1 = "</title><link href='stylesheet.css' type='text/css' rel='stylesheet'/><style type='text/css'>@page { margin-bottom: 5.000000pt; margin-top: 5.000000pt; }</style></head><body>"
+    h20 = "<h2><span style='border-bottom:1px solid'>"
+    h21 = "</span></h2><p>"
+    tail = "</p><div class='mbppagebreak'></div></body></html>"
+
+
+    for link in all_chapters:
+
+        res = requests.get(link)
+        res.encoding = 'gb2312'
+        page = re.sub('&nbsp;', ' ', res.text)  # for all text in res, change &nbsp to ' '
+        soup = BeautifulSoup(page, 'html.parser')
+        title = (get_title(soup, source(url)))
+        content = get_content(soup, source(url))
+        file_name = 'chapter_' + str(counter) + '.xhtml'
+        epub_content = header0 + title + header1 + h20 + title + h21 + content + tail
+
+        file = open(file_name, "wb")
+        file.write(epub_content.encode('utf-8'))
+        counter += 1
+        file.close
+
+
+
+
 
 if __name__ == "__main__":
 
@@ -108,7 +138,7 @@ if __name__ == "__main__":
     ty2016 = 'http://www.ty2016.net/book/Murakami_13/'
     lib99 = 'http://www.99lib.net/book/8007/index.htm'
 
-    write_in(ty2016)
+    get_epub(ty2016)
 
 
 
