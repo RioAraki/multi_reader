@@ -70,7 +70,9 @@ def get_content(soup, source):
     elif source == 'kanunu1':
         content = soup.find_all('p')[0].text
     elif source == 'ty2016':
-        content = soup.find_all('p')[1].text
+        content = str(soup.find_all('p')[1])
+        content = re.sub('<br/>\n<br/>', '</p>\n<p>', content)
+        print(content)
     elif source == '99lib':
         content = soup.find_all('p') # TODO: see how to extract lib99's content
     return content
@@ -98,14 +100,9 @@ def write_in_md(url):
         file.write(content)
     file.close()
 
-def br_to_p(text):
-    re.sub('<br><br>', '</p><p>',text)
-    print (text)
-
-
 def get_epub(url):
     all_chapters = route(url)
-    counter = 0
+    counter = 1
     header0 = "<?xml version='1.0' encoding='utf-8' standalone='no'?><!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.1//EN'" \
              " 'http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd'><html xmlns='http://www.w3.org/1999/xhtml'" \
              " xml:lang='zh-CN'><head><title>"
@@ -114,37 +111,19 @@ def get_epub(url):
     h21 = "</span></h2><p>"
     tail = "</p><div class='mbppagebreak'></div></body></html>"
 
-
-    # for link in all_chapters:
-    #     res = requests.get(link)
-    #     res.encoding = 'gb2312'
-    #     page = re.sub('&nbsp;', ' ', res.text)  # for all text in res, change &nbsp to ' '
-    #     soup = BeautifulSoup(page, 'html.parser')
-    #     title = (get_title(soup, source(url)))
-    #     content = get_content(soup, source(url))
-    #     file_name = 'chapter_' + str(counter) + '.xhtml'
-    #     epub_content = header0 + title + header1 + h20 + title + h21 + content + tail
-    #
-    #     file = open(file_name, "wb")
-    #     file.write(epub_content.encode('utf-8'))
-    #     counter += 1
-    #     file.close
-    link = 'http://www.ty2016.net/book/Murakami_13/67710.html'
-    res = requests.get(link)
-    res.encoding = 'gb2312'
-    page = re.sub('&nbsp;', ' ', res.text)  # for all text in res, change &nbsp to ' '
-    page = re.sub('<br />\r\n<br />', '</p><p>', page)
-    print(page)
-    soup = BeautifulSoup(page, 'html.parser')
-    title = (get_title(soup, source(url)))
-    content = get_content(soup, source(url))
-    file_name = 'chapter_' + str(counter) + '.xhtml'
-    epub_content = header0 + title + header1 + h20 + title + h21 + content + tail
-    file = open(file_name, "wb")
-    file.write(epub_content.encode('utf-8'))
-    file.close
-
-
+    for link in all_chapters:
+        res = requests.get(link)
+        res.encoding = 'gb2312'
+        page = re.sub('&nbsp;', ' ', res.text)  # for all text in res, change &nbsp to ' '
+        soup = BeautifulSoup(page, 'html.parser')
+        title = (get_title(soup, source(url)))
+        content = get_content(soup, source(url))
+        file_name = 'chapter_' + str(counter) + '.xhtml'
+        epub_content = header0 + title + header1 + h20 + title + h21 + content + tail
+        file = open(file_name, "wb")
+        file.write(epub_content.encode('utf-8'))
+        counter += 1
+        file.close
 
 if __name__ == "__main__":
 
