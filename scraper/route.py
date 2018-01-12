@@ -6,7 +6,7 @@ from bs4 import BeautifulSoup
 
 def get_source(url):
     if 'kanunu' in url:
-        if url.split('/')[-1]:
+        if url.split('/')[-1] and 'index' not in url.split('/')[-1]:
             return 'kanunu'
         else:
             return 'kanunu1'
@@ -87,18 +87,31 @@ def get_intro(soup, source):
     if source == 'kanunu':
         #/html/body/div[1]/table[9]/tbody/tr/td[2]/table[4]/tbody/tr/td/table[1]/tbody/tr/td[2]/text()
         intro = soup.find_all('td')[16].find_all('td')[1].text
-        return intro
     elif source == 'ty2016':
         # //*[@id="main"]/div[2]/div[2]/p/text()
         intro = soup.find('div', {'id': 'main'}).find_all('p')[0].text
-        return intro
     elif source == 'kanunu1':
         # /html/body/div[1]/table[9]/tbody/tr[4]/td/table[1]/tbody/tr[2]/td/text()
         intro = soup.find_all('td')[16].text
-        print (intro)
-        return intro
     elif source == 'dushu369':
         pass
+    if intro:
+        print(intro)
+        return intro
+    return False
+
+def get_author(soup, source):
+    if source == 'kanunu':
+        # /html/body/div[1]/table[9]/tbody/tr/td[2]/table[2]/tbody/tr[2]/td
+        author = soup.find_all('td')[12].find_all('td')[1].text.split(" ")[1].split("：")[2] # Note to use chinese "："
+    elif source == 'kanunu1':
+        author = soup.find_all('td')[12].text.split("：")[1].split(" ")[0]
+    elif source == 'ty2016':
+        author =soup.find_all('h2')[1].a.text
+    elif source == 'dushu369':
+        pass
+    if author:
+        return author
     return False
 
 
@@ -155,6 +168,7 @@ if __name__ == "__main__":
 
     kanunu = 'https://www.kanunu8.com/wuxia/201102/1625.html'
     kanunu1 = 'https://www.kanunu8.com/book2/10752/'
+    kanunu1_1 = 'https://www.kanunu8.com/book2/10741/index.html'
     ty2016 = 'http://www.ty2016.net/book/Murakami_13/'
     lib99 = 'http://www.99lib.net/book/8007/index.htm'
 
@@ -163,12 +177,13 @@ if __name__ == "__main__":
     # get_epub_content(ty2016)
 
     # TEST get_intro/ get_author
-    url = kanunu1
+    url = ty2016
     res = requests.get(url)
     res.encoding = 'gb2312'
     page = re.sub('&nbsp;', ' ', res.text)  # for all text in res, change &nbsp to ' '
     soup = BeautifulSoup(page, 'html.parser')
-    get_intro(soup, get_source(url))
+    get_author(soup, get_source(url))
+    # get_intro(soup, get_source(url))
 
 
 
