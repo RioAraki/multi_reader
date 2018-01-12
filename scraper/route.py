@@ -4,8 +4,7 @@ from bs4 import BeautifulSoup
 
 # TODO: 添加对duhsu369的支持
 
-def source(url):
-
+def get_source(url):
     if 'kanunu' in url:
         if url.split('/')[-1]:
             return 'kanunu'
@@ -72,7 +71,6 @@ def get_content(soup, source):
     elif source == 'ty2016':
         content = str(soup.find_all('p')[1])
         content = re.sub('<br/>\n<br/>', '</p>\n<p>', content)
-        print(content)
     elif source == '99lib':
         content = soup.find_all('p') # TODO: see how to extract lib99's content
     return content
@@ -85,6 +83,24 @@ def get_title(soup, source):
         title = soup.find_all('h1')[0].text
     return title
 
+def get_intro(soup, source):
+    if source == 'kanunu':
+        #/html/body/div[1]/table[9]/tbody/tr/td[2]/table[4]/tbody/tr/td/table[1]/tbody/tr/td[2]/text()
+        intro = soup.find_all('td')[16].find_all('td')[1].text
+        return intro
+    elif source == 'ty2016':
+        # //*[@id="main"]/div[2]/div[2]/p/text()
+        intro = soup.find('div', {'id': 'main'}).find_all('p')[0].text
+        return intro
+    elif source == 'kanunu1':
+        # /html/body/div[1]/table[9]/tbody/tr[4]/td/table[1]/tbody/tr[2]/td/text()
+        intro = soup.find_all('td')[16].text
+        print (intro)
+        return intro
+    elif source == 'dushu369':
+        pass
+    return False
+
 
 def write_in_md(url):
     all_chapters = route(url)
@@ -94,13 +110,14 @@ def write_in_md(url):
         res.encoding = 'gb2312'
         page = re.sub('&nbsp;', ' ', res.text)  # for all text in res, change &nbsp to ' '
         soup = BeautifulSoup(page, 'html.parser')
-        title = ('<br/>##' + get_title(soup, source(url))).encode('utf-8')
-        content = get_content(soup, source(url)).encode('utf-8')
+        title = ('<br/>##' + get_title(soup, get_source(url))).encode('utf-8')
+        content = get_content(soup, get_source(url)).encode('utf-8')
         file.write(title)
         file.write(content)
     file.close()
 
-def get_epub(url):
+
+def get_epub_content(url):
     all_chapters = route(url)
     counter = 1
     header0 = "<?xml version='1.0' encoding='utf-8' standalone='no'?><!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.1//EN'" \
@@ -116,14 +133,23 @@ def get_epub(url):
         res.encoding = 'gb2312'
         page = re.sub('&nbsp;', ' ', res.text)  # for all text in res, change &nbsp to ' '
         soup = BeautifulSoup(page, 'html.parser')
-        title = (get_title(soup, source(url)))
-        content = get_content(soup, source(url))
+        title = (get_title(soup, get_source(url)))
+        content = get_content(soup, get_source(url))
         file_name = 'chapter_' + str(counter) + '.xhtml'
         epub_content = header0 + title + header1 + h20 + title + h21 + content + tail
         file = open(file_name, "wb")
         file.write(epub_content.encode('utf-8'))
         counter += 1
         file.close
+
+
+def get_epub_meta(url):
+    pass
+
+
+def build_epub():
+    pass
+
 
 if __name__ == "__main__":
 
@@ -132,7 +158,19 @@ if __name__ == "__main__":
     ty2016 = 'http://www.ty2016.net/book/Murakami_13/'
     lib99 = 'http://www.99lib.net/book/8007/index.htm'
 
-    get_epub(ty2016)
+
+    # TEST EPUB
+    # get_epub_content(ty2016)
+
+    # TEST get_intro/ get_author
+    url = kanunu1
+    res = requests.get(url)
+    res.encoding = 'gb2312'
+    page = re.sub('&nbsp;', ' ', res.text)  # for all text in res, change &nbsp to ' '
+    soup = BeautifulSoup(page, 'html.parser')
+    get_intro(soup, get_source(url))
+
+
 
 
 
