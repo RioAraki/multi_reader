@@ -83,6 +83,7 @@ def get_title(soup, source):
         title = soup.find_all('h1')[0].text
     return title
 
+
 def get_intro(soup, source):
     if source == 'kanunu':
         #/html/body/div[1]/table[9]/tbody/tr/td[2]/table[4]/tbody/tr/td/table[1]/tbody/tr/td[2]/text()
@@ -100,9 +101,9 @@ def get_intro(soup, source):
         return intro
     return False
 
+
 def get_author(soup, source):
     if source == 'kanunu':
-        # /html/body/div[1]/table[9]/tbody/tr/td[2]/table[2]/tbody/tr[2]/td
         author = soup.find_all('td')[12].find_all('td')[1].text.split(" ")[1].split("：")[2] # Note to use chinese "："
     elif source == 'kanunu1':
         author = soup.find_all('td')[12].text.split("：")[1].split(" ")[0]
