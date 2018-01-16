@@ -1,5 +1,6 @@
 import requests
 import re
+import os
 from bs4 import BeautifulSoup
 
 # TODO: 添加对duhsu369的支持
@@ -97,7 +98,6 @@ def get_intro(soup, source):
     elif source == 'dushu369':
         pass
     if intro:
-        print(intro)
         return intro
     return False
 
@@ -157,12 +157,41 @@ def get_epub_content(url):
         file.close
 
 
-def get_epub_meta(url):
-    pass
+def get_epub_meta():
+    filename = ""
 
 
-def build_epub():
-    pass
+def META_INF():
+    os.makedirs()
+
+def build_epub(url):
+    res = requests.get(url)
+    res.encoding = 'gb2312'
+    page = re.sub('&nbsp;', ' ', res.text)  # for all text in res, change &nbsp to ' '
+    soup = BeautifulSoup(page, 'html.parser')
+    title = get_title(soup, get_source(url))
+    author = get_author(soup, get_source(url))
+    intro = get_intro(soup, get_source(url))
+
+    # create directory
+    dirname = title
+    os.makedirs(title, exist_ok= True)
+
+    # create meta_inf
+    # TODO: a better way might be have a META-INF folder ready and copy it to other epub folders since META-INF neever changes
+
+    meta_inf_dir = dirname+'/META-INF'
+    meta_inf_content = "<?xml version='1.0'?><container version='1.0' xmlns='urn:oasis:names:tc:opendocument:xmlns:" \
+                       "container'><rootfiles><rootfile full-path='content.opf' media-type='application/oe" \
+                       "bps-package+xml'/></rootfiles></container>"
+    os.makedirs(meta_inf_dir, exist_ok=True)
+    containxml_path = meta_inf_dir+'/container.xml'
+    with open(containxml_path, "w") as f:
+        f.write(meta_inf_content)
+
+    # create catelog.xhtml
+
+    
 
 
 if __name__ == "__main__":
@@ -173,18 +202,24 @@ if __name__ == "__main__":
     ty2016 = 'http://www.ty2016.net/book/Murakami_13/'
     lib99 = 'http://www.99lib.net/book/8007/index.htm'
 
+    # Test build epub
 
-    # TEST EPUB
-    # get_epub_content(ty2016)
+    build_epub(kanunu)
 
-    # TEST get_intro/ get_author
-    url = ty2016
-    res = requests.get(url)
-    res.encoding = 'gb2312'
-    page = re.sub('&nbsp;', ' ', res.text)  # for all text in res, change &nbsp to ' '
-    soup = BeautifulSoup(page, 'html.parser')
-    get_author(soup, get_source(url))
-    # get_intro(soup, get_source(url))
+
+
+
+    # # TEST EPUB
+    # # get_epub_content(ty2016)
+    #
+    # # TEST get_intro/ get_author
+    # url = ty2016
+    # res = requests.get(url)
+    # res.encoding = 'gb2312'
+    # page = re.sub('&nbsp;', ' ', res.text)  # for all text in res, change &nbsp to ' '
+    # soup = BeautifulSoup(page, 'html.parser')
+    # get_author(soup, get_source(url))
+    # # get_intro(soup, get_source(url))
 
 
 
