@@ -17,10 +17,9 @@ def get_source(url):
         return '99lib'
     return False
 
-
+# 有一个 parse link 的潜在问题，https://www.kanunu8.com/book2/10741/可以正确 parse，但https://www.kanunu8.com/book2/10741/index.html无法正确parse
 def parse_index(soup, book_idx, url):
     all_chapter = []
-
     for link in soup.find_all('a'):
         href = link.get('href')
         if url.split('/')[-1]: # format like 'https://www.kanunu8.com/wuxia/201102/1625.html'
@@ -29,8 +28,6 @@ def parse_index(soup, book_idx, url):
                     if 'kanunu' in url:
                         pos = url.index(book_idx)
                         abs_link = url[:pos] + href
-                    elif '99lib' in url and 'm.99lib.net' not in href:
-                        abs_link = 'http://www.99lib.net' + href
                     if abs_link not in all_chapter:
                         all_chapter.append(abs_link)
         else: # format like 'https://www.kanunu8.com/book2/10752/'
@@ -52,7 +49,7 @@ def find_index(url):
         print ('unable to find index from the url given')
         return False
 
-
+# TODO: 回头可以思考怎么重构一下，改成input 为 soup rather than url，以及这个function可能没必要
 def route(url):
     page = requests.get(url)
     soup = BeautifulSoup(page.content, 'html.parser')
@@ -66,14 +63,14 @@ def route(url):
 
 def get_content(soup, source):
     if source == 'kanunu':
-        content = soup.body.div.find_all('table')[4].find_all('td')[1].p.text
+        content = str(soup.body.div.find_all('table')[4].find_all('td')[1].p)
     elif source == 'kanunu1':
-        content = soup.find_all('p')[0].text
+        content = str(soup.find_all('p')[0])
     elif source == 'ty2016':
         content = str(soup.find_all('p')[1])
-        content = re.sub('<br/>\n<br/>', '</p>\n<p>', content)
     elif source == '99lib':
         content = soup.find_all('p') # TODO: see how to extract lib99's content
+    content = re.sub('<br/>\n<br/>', '</p>\n<p>', content)
     return content
 
 
@@ -131,7 +128,7 @@ def write_in_md(url):
     file.close()
 
 
-def get_epub_content(url):
+def get_epub_content(url, folder):
     all_chapters = route(url)
     counter = 1
     header0 = "<?xml version='1.0' encoding='utf-8' standalone='no'?><!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.1//EN'" \
@@ -151,18 +148,25 @@ def get_epub_content(url):
         content = get_content(soup, get_source(url))
         file_name = 'chapter_' + str(counter) + '.xhtml'
         epub_content = header0 + title + header1 + h20 + title + h21 + content + tail
-        file = open(file_name, "wb")
+        file = open(folder+'/'+file_name, "wb")
         file.write(epub_content.encode('utf-8'))
         counter += 1
         file.close
+    return counter
 
-
-def get_epub_meta():
+def get_epub_meta(dirname):
     filename = ""
 
 
-def META_INF():
-    os.makedirs()
+def META_INF(dirname):
+    meta_inf_dir = dirname + '/META-INF'
+    meta_inf_content = "<?xml version='1.0'?><container version='1.0' xmlns='urn:oasis:names:tc:opendocument:xmlns:" \
+                       "container'><rootfiles><rootfile full-path='content.opf' media-type='application/oe" \
+                       "bps-package+xml'/></rootfiles></container>"
+    os.makedirs(meta_inf_dir, exist_ok=True)
+    containxml_path = meta_inf_dir + '/container.xml'
+    with open(containxml_path, "w") as f:
+        f.write(meta_inf_content)
 
 def build_epub(url):
     res = requests.get(url)
@@ -177,33 +181,27 @@ def build_epub(url):
     dirname = title
     os.makedirs(title, exist_ok= True)
 
+    # write content in the directory
+    chapters = get_epub_content(url, dirname)
+
     # create meta_inf
     # TODO: a better way might be have a META-INF folder ready and copy it to other epub folders since META-INF neever changes
-
-    meta_inf_dir = dirname+'/META-INF'
-    meta_inf_content = "<?xml version='1.0'?><container version='1.0' xmlns='urn:oasis:names:tc:opendocument:xmlns:" \
-                       "container'><rootfiles><rootfile full-path='content.opf' media-type='application/oe" \
-                       "bps-package+xml'/></rootfiles></container>"
-    os.makedirs(meta_inf_dir, exist_ok=True)
-    containxml_path = meta_inf_dir+'/container.xml'
-    with open(containxml_path, "w") as f:
-        f.write(meta_inf_content)
+    META_INF(dirname)
 
     # create catelog.xhtml
 
-    
+
 
 
 if __name__ == "__main__":
 
     kanunu = 'https://www.kanunu8.com/wuxia/201102/1625.html'
     kanunu1 = 'https://www.kanunu8.com/book2/10752/'
-    kanunu1_1 = 'https://www.kanunu8.com/book2/10741/index.html'
+    kanunu1_1 = 'https://www.kanunu8.com/book2/10741/'
     ty2016 = 'http://www.ty2016.net/book/Murakami_13/'
     lib99 = 'http://www.99lib.net/book/8007/index.htm'
 
     # Test build epub
-
     build_epub(kanunu)
 
 
