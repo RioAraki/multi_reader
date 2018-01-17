@@ -81,7 +81,6 @@ def get_title(soup, source):
         title = soup.find_all('h1')[0].text
     return title
 
-
 def get_intro(soup, source):
     if source == 'kanunu':
         #/html/body/div[1]/table[9]/tbody/tr/td[2]/table[4]/tbody/tr/td/table[1]/tbody/tr/td[2]/text()
@@ -164,14 +163,43 @@ def META_INF(dirname):
     containxml_path = meta_inf_dir + '/container.xml'
     with open(containxml_path, "w") as f:
         f.write(meta_inf_content)
+    f.close()
 
 
-def catalogxhtml(chapters, title):
+def catalogxhtml(chapter_dict, title, dirname):
     head1 = "<?xml version='1.0' encoding='utf-8' standalone='no'?><!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.1//EN" \
             "' 'http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd'><html xmlns='http://www.w3.org/1999/xhtml' xml:lang='" \
             "zh-CN'><head><title>"
     head2 = "</title><link href='stylesheet.css' type='text/css' rel='stylesheet'/><style type='text/css'>@page " \
             "{ margin-bottom: 5.000000pt; margin-top: 5.000000pt; }</style></head><body><h1>目录<br/>Content</h1><ul>"
+    tail = "</ul><div class='mbppagebreak'></div></body></html>"
+
+    list_1 = "<li class='catalog'><a href='chapter_"
+    list_2 = ".xhtml'>"
+    list_3 = "</a></li>"
+
+    content = head1 + title + head2
+
+    for chapter,title in chapter_dict.items():
+        lst = list_1 + str(chapter) + list_2 + title + list_3
+        content += lst
+
+    content += tail
+    with open(dirname+'/catalog.xhtml', "wb") as f:
+        f.write(content.encode('utf-8'))
+    f.close()
+
+
+def mimetype(dirname):
+    content = 'application/epub+zip'
+    with open(dirname + '/mimetype', "wb") as f:
+        f.write(content.encode('utf-8'))
+
+
+def contentopf(chapter_dict, title, author, dirname):
+
+
+
 
 def build_epub(url):
     res = requests.get(url)
@@ -194,9 +222,14 @@ def build_epub(url):
     META_INF(dirname)
 
     # create catelog.xhtml
+    catalogxhtml(chapter_dict, title, dirname)
 
+    # create mimetype
+    # TODO: a better way might be have a META-INF folder ready and copy it to other epub folders since META-INF neever changes
+    mimetype(dirname)
 
-
+    # create content.opf
+    contentopf(chapter_dict, title, author, dirname)
 
 
 if __name__ == "__main__":
