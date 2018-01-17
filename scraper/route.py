@@ -197,7 +197,7 @@ def mimetype(dirname):
         f.close()
 
 
-def contentopf(chapter_dict, title, author, intro, source, dirname):
+def contentopf(chapter_dict, title, author, intro, source_site, source_url, dirname):
     head1 = "<?xml version='1.0' encoding='utf-8'?><package xmlns='http://www.idpf.org/2007/opf' " \
             "xmlns:dc='http://purl.org/dc/elements/1.1/' unique-identifier='bookid' version='2.0'> " \
             " <metadata xmlns:dc='http://purl.org/dc/elements/1.1/' xmlns:opf='http://www.idpf.org/2007/opf'>"
@@ -205,17 +205,6 @@ def contentopf(chapter_dict, title, author, intro, source, dirname):
     dccreator = "<dc:creator>"+author+"</dc:creator>"
     dcintro = "<dc:intro>"+intro+"</dc:intro>"
     dclanguage = "<dc:language>zh-cn</dc:language>"
-    source_site = ""
-    source_url = ""
-    if 'kanunu' in source:
-        source_site = '努努书坊'
-        source_url = '[https://www.kanunu8.com/]'
-    elif 'ty2016' in source:
-        source_site = '天涯书库'
-        source_url = '[http://www.ty2016.net/]'
-    elif 'dushu369' in source:
-        source_site = '读书369'
-        source_url = '[http://www.dushu369.com/]'
     dccontributor = "<dc:contributor>" + source_site + ' ' + source_url + "</dc:contributor>"
     dcpublisher = "<dc:publisher>"+source_url+"</dc:publisher>"
     dcsubject = "<dc:subject>"+source_site+"</dc:subject>"
@@ -247,6 +236,63 @@ def contentopf(chapter_dict, title, author, intro, source, dirname):
         f.write(content.encode('utf-8'))
         f.close()
 
+
+def pagexhtml(title, author, intro, source_site, source_url, dirname):
+    head1 = "<?xml version='1.0' encoding='utf-8' standalone='no'?><!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.1//EN'" \
+            " 'http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd'><html xmlns='http://www.w3.org/1999/xhtml' xml:lang='" \
+            "zh-CN'><head><meta http-equiv='Content-Type' content='text/html; charset=UTF-8'/><title>书籍信息</title>" \
+            "<style type='text/css' title='override_css'>@page {padding: 0pt; margin:0pt}body { text-align: left;" \
+            " padding:0pt; margin: 0pt;font-size: 1.0em}ul,li{list-style-type:none;margin:0;padding:0;line-height:" \
+            " 2.5em;font-size: 0.8em}div,h1,h2 { margin: 0pt; padding: 0pt}h1{font-size:1.2em}h2 {font-size: 1.1em}" \
+            ".copyright{color:#ff4500}</style></head><body><div><h1>"
+    head2 = "</h1><h2>作者："
+    head3 = "</h2><ul><li>内容简介："
+    head4 = "</li><li class='copyright'>由 multi_reader 开源项目提供epub下载</li><li class='copyright'>书籍内容由"
+    head5 = "提供，请访问："
+    head6 = "</li></ul></div></body></html>"
+    content = head1 + title + head2 + author + head3 + intro + head4 + source_site + head5 + source_url + head6
+    with open(dirname+'/content.opf', "wb") as f:
+        f.write(content.encode('utf-8'))
+        f.close()
+
+
+# TODO: let user modify the format accordingly
+def stylesheetcss(dirname):
+    content = "body{margin:10px;font-size:1em}ul,li{list-style-type:none;margin:0;padding:0}p{text-indent:2em;line-" \
+              "height:1.5em;margin-top:0;margin-bottom:1.5em}.catalog{line-height:2.5em;font-size:.8em}li{border-bot" \
+              "tom:1px solid #D5D5D5}h1{font-size:1.6em;font-weight:700}h2{display:block;font-size:1.2em;font-weight" \
+              ":700;margin-bottom:.83em;margin-left:0;margin-right:0;margin-top:1em}.mbppagebreak{display:block;marg" \
+              "in-bottom:0;margin-left:0;margin-right:0;margin-top:0}a{color:inherit;text-decoration:none;cursor:def" \
+              "ault}a[href]{color:blue;text-decoration:none;cursor:pointer}.italic{font-style:italic}"
+    with open(dirname+'/stylesheet.css', 'w') as f:
+        f.write(content)
+        f.close()
+
+
+# TODO: get more ideas on what meta in head portion does
+def tocncx(chapter_dict, title, author, dirname):
+    head1 = "<?xml version='1.0' encoding='utf-8'?><ncx xmlns='http://www.daisy.org/z3986/2005/ncx/' version='2005-1'><docTitle><text>"
+    head2 = "</text></docTitle><docAuthor><text>"
+    head3 = "</text></docAuthor><navMap>"
+    tail = "</navMap></ncx>"
+
+
+    nav1 = "<navPoint id='chapter_"
+    nav2 = "' playOrder='"
+    nav3 = "'><navLabel><text>"
+    nav4 = "</text></navLabel><content src='chapter_"
+    nav5 = ".xhtml'/></navPoint>"
+
+    content = head1 + title + head2 + author + head3
+    for chapter, title in chapter_dict.items():
+        content += nav1 +str(chapter)+ nav2 + str(chapter) + nav3 + title + nav4 + str(chapter) + nav5
+    content += tail
+
+    with open(dirname+'/toc.ncx', 'wb') as f:
+        f.write(content.encode('utf-8'))
+        f.close()
+
+
 def build_epub(url):
     res = requests.get(url)
     res.encoding = 'gb2312'
@@ -264,19 +310,39 @@ def build_epub(url):
     chapter_dict = get_epub_content(url, dirname)
 
     # create meta_inf
-    # TODO: a better way might be have a META-INF folder ready and copy it to other epub folders since META-INF neever changes
+    # TODO: a better way might be have a META-INF folder ready and copy it to other epub folders since META-INF never changes
     META_INF(dirname)
 
     # create catelog.xhtml
     catalogxhtml(chapter_dict, title, dirname)
 
     # create mimetype
-    # TODO: a better way might be have a META-INF folder ready and copy it to other epub folders since META-INF neever changes
+    # TODO: a better way might be have a mimetype folder ready and copy it to other epub folders since mimetype never changes
     mimetype(dirname)
 
     # create content.opf
     source = get_source(url)
-    contentopf(chapter_dict, title, author, intro, source, dirname)
+    source_site = ""
+    source_url = ""
+    if 'kanunu' in source:
+        source_site = '努努书坊'
+        source_url = '[https://www.kanunu8.com/]'
+    elif 'ty2016' in source:
+        source_site = '天涯书库'
+        source_url = '[http://www.ty2016.net/]'
+    elif 'dushu369' in source:
+        source_site = '读书369'
+        source_url = '[http://www.dushu369.com/]'
+    contentopf(chapter_dict, title, author, intro, source_site, source_url, dirname)
+
+    # create page.xhtml
+    pagexhtml(title, author, intro, source_site, source_url, dirname)
+
+    # create stylesheet.css
+    stylesheetcss(dirname)
+
+    # create tocncx
+    tocncx(chapter_dict, title, author, dirname)
 
 
 if __name__ == "__main__":
