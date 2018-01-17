@@ -138,13 +138,14 @@ def get_epub_content(url, folder):
     h20 = "<h2><span style='border-bottom:1px solid'>"
     h21 = "</span></h2><p>"
     tail = "</p><div class='mbppagebreak'></div></body></html>"
-
+    title_dict = {}
     for link in all_chapters:
         res = requests.get(link)
         res.encoding = 'gb2312'
         page = re.sub('&nbsp;', ' ', res.text)  # for all text in res, change &nbsp to ' '
         soup = BeautifulSoup(page, 'html.parser')
         title = (get_title(soup, get_source(url)))
+        title_dict[counter] = title
         content = get_content(soup, get_source(url))
         file_name = 'chapter_' + str(counter) + '.xhtml'
         epub_content = header0 + title + header1 + h20 + title + h21 + content + tail
@@ -152,11 +153,7 @@ def get_epub_content(url, folder):
         file.write(epub_content.encode('utf-8'))
         counter += 1
         file.close
-    return counter
-
-def get_epub_meta(dirname):
-    filename = ""
-
+    return title_dict
 
 def META_INF(dirname):
     meta_inf_dir = dirname + '/META-INF'
@@ -167,6 +164,14 @@ def META_INF(dirname):
     containxml_path = meta_inf_dir + '/container.xml'
     with open(containxml_path, "w") as f:
         f.write(meta_inf_content)
+
+
+def catalogxhtml(chapters, title):
+    head1 = "<?xml version='1.0' encoding='utf-8' standalone='no'?><!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.1//EN" \
+            "' 'http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd'><html xmlns='http://www.w3.org/1999/xhtml' xml:lang='" \
+            "zh-CN'><head><title>"
+    head2 = "</title><link href='stylesheet.css' type='text/css' rel='stylesheet'/><style type='text/css'>@page " \
+            "{ margin-bottom: 5.000000pt; margin-top: 5.000000pt; }</style></head><body><h1>目录<br/>Content</h1><ul>"
 
 def build_epub(url):
     res = requests.get(url)
@@ -182,13 +187,14 @@ def build_epub(url):
     os.makedirs(title, exist_ok= True)
 
     # write content in the directory
-    chapters = get_epub_content(url, dirname)
+    chapter_dict = get_epub_content(url, dirname)
 
     # create meta_inf
     # TODO: a better way might be have a META-INF folder ready and copy it to other epub folders since META-INF neever changes
     META_INF(dirname)
 
     # create catelog.xhtml
+
 
 
 
