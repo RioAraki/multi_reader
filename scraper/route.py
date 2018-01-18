@@ -251,8 +251,8 @@ def pagexhtml(title, author, intro, source_site, source_url, dirname):
             "\n.copyright{color:#ff4500}\n</style>\n</head>\n<body>\n<div>\n<h1>"
     head2 = "</h1>\n<h2>作者："
     head3 = "</h2>\n<ul>\n<li>内容简介："
-    head4 = "</li>\n<li class='copyright'>由 multi_reader 开源项目提供epub下载，可访问 https://github.com/" \
-            "RioAraki/multi_reader 查看详情\n欢迎 fork, star, 提issue 等。</li>\n<li class='copyright'>书籍内容由"
+    head4 = "</li>\n<li class='copyright'>由 multi_reader 开源项目提供epub下载，现支持将部分中文在线阅读网站的书库直接转成epub格式。\
+    \n可访问 https://github.com/RioAraki/multi_reader 查看详情。\n欢迎 fork, star, 提 issue 等。</li>\n<li class='copyright'>书籍内容由"
     head5 = "提供，请访问："
     head6 = "</li>\n</ul>\n</div>\n</body>\n</html>"
     content = head1 + title + head2 + author + head3 + intro + head4 + source_site + head5 + source_url + head6
@@ -351,6 +351,8 @@ def build_epub(url):
     # create tocncx
     tocncx(chapter_dict, title, author, dirname)
 
+def compress():
+    pass
 
 if __name__ == "__main__":
 
