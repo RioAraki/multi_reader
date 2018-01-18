@@ -1,0 +1,110 @@
+<?xml version='1.0' encoding='utf-8'?>
+
+<package xmlns='http://www.idpf.org/2007/opf' xmlns:dc='http://purl.org/dc/elements/1.1/' unique-identifier='bookid' version='2.0'>
+
+  <metadata xmlns:dc='http://purl.org/dc/elements/1.1/' xmlns:opf='http://www.idpf.org/2007/opf'>
+<dc:title>射雕英雄传</dc:title>
+<dc:creator>金庸</dc:creator>
+<dc:description>　　南宋中叶，局势纷乱，郭、杨两家惨遭灭门，其后人各散东西。郭家后人郭靖为人正直坚毅，自小得江南七怪传授武艺，更先后习得洪七公之“降龙十八掌”及周伯通之“九阴真经”。结识了灵敏活泼的黄蓉，二人展开了一段生死相许的爱情。另方面，杨家后人杨康为金人完颜洪烈收养，贵为太子。康及后与靖相认，更查出烈为他俩的杀父仇人，惜康利欲薰心，竟认贼作父。为取得“九阴真经”及“武穆遗书”两本绝学，康与西毒欧阳锋联手对付靖，更杀死江南七怪及嫁祸东邪，欲借刀杀人。武林大会“华山论剑”举行在即，“九阴真经”成为各派争夺的目标，靖更是众矢之的，一场武林浩劫即将爆发! →金庸武侠小说作品全集</dc:description>
+<dc:language>zh-cn</dc:language>
+<dc:contributor>努努书坊 [https://www.kanunu8.com/]</dc:contributor>
+<dc:publisher>[https://www.kanunu8.com/]</dc:publisher>
+<dc:subject>努努书坊</dc:subject>
+<dc:identifier id='bookid'>pymtrdr:000001</dc:identifier></metadata>
+
+<manifest><item href='chapter_1.xhtml' id='id1' media-type='application/xhtml+xml'/>
+<item href='chapter_2.xhtml' id='id2' media-type='application/xhtml+xml'/>
+<item href='chapter_3.xhtml' id='id3' media-type='application/xhtml+xml'/>
+<item href='chapter_4.xhtml' id='id4' media-type='application/xhtml+xml'/>
+<item href='chapter_5.xhtml' id='id5' media-type='application/xhtml+xml'/>
+<item href='chapter_6.xhtml' id='id6' media-type='application/xhtml+xml'/>
+<item href='chapter_7.xhtml' id='id7' media-type='application/xhtml+xml'/>
+<item href='chapter_8.xhtml' id='id8' media-type='application/xhtml+xml'/>
+<item href='chapter_9.xhtml' id='id9' media-type='application/xhtml+xml'/>
+<item href='chapter_10.xhtml' id='id10' media-type='application/xhtml+xml'/>
+<item href='chapter_11.xhtml' id='id11' media-type='application/xhtml+xml'/>
+<item href='chapter_12.xhtml' id='id12' media-type='application/xhtml+xml'/>
+<item href='chapter_13.xhtml' id='id13' media-type='application/xhtml+xml'/>
+<item href='chapter_14.xhtml' id='id14' media-type='application/xhtml+xml'/>
+<item href='chapter_15.xhtml' id='id15' media-type='application/xhtml+xml'/>
+<item href='chapter_16.xhtml' id='id16' media-type='application/xhtml+xml'/>
+<item href='chapter_17.xhtml' id='id17' media-type='application/xhtml+xml'/>
+<item href='chapter_18.xhtml' id='id18' media-type='application/xhtml+xml'/>
+<item href='chapter_19.xhtml' id='id19' media-type='application/xhtml+xml'/>
+<item href='chapter_20.xhtml' id='id20' media-type='application/xhtml+xml'/>
+<item href='chapter_21.xhtml' id='id21' media-type='application/xhtml+xml'/>
+<item href='chapter_22.xhtml' id='id22' media-type='application/xhtml+xml'/>
+<item href='chapter_23.xhtml' id='id23' media-type='application/xhtml+xml'/>
+<item href='chapter_24.xhtml' id='id24' media-type='application/xhtml+xml'/>
+<item href='chapter_25.xhtml' id='id25' media-type='application/xhtml+xml'/>
+<item href='chapter_26.xhtml' id='id26' media-type='application/xhtml+xml'/>
+<item href='chapter_27.xhtml' id='id27' media-type='application/xhtml+xml'/>
+<item href='chapter_28.xhtml' id='id28' media-type='application/xhtml+xml'/>
+<item href='chapter_29.xhtml' id='id29' media-type='application/xhtml+xml'/>
+<item href='chapter_30.xhtml' id='id30' media-type='application/xhtml+xml'/>
+<item href='chapter_31.xhtml' id='id31' media-type='application/xhtml+xml'/>
+<item href='chapter_32.xhtml' id='id32' media-type='application/xhtml+xml'/>
+<item href='chapter_33.xhtml' id='id33' media-type='application/xhtml+xml'/>
+<item href='chapter_34.xhtml' id='id34' media-type='application/xhtml+xml'/>
+<item href='chapter_35.xhtml' id='id35' media-type='application/xhtml+xml'/>
+<item href='chapter_36.xhtml' id='id36' media-type='application/xhtml+xml'/>
+<item href='chapter_37.xhtml' id='id37' media-type='application/xhtml+xml'/>
+<item href='chapter_38.xhtml' id='id38' media-type='application/xhtml+xml'/>
+<item href='chapter_39.xhtml' id='id39' media-type='application/xhtml+xml'/>
+<item href='chapter_40.xhtml' id='id40' media-type='application/xhtml+xml'/>
+<item href='chapter_41.xhtml' id='id41' media-type='application/xhtml+xml'/>
+<item href='chapter_42.xhtml' id='id42' media-type='application/xhtml+xml'/>
+<item href='chapter_43.xhtml' id='id43' media-type='application/xhtml+xml'/>
+<item href='catalog.xhtml' id='catalog' media-type='application/xhtml+xml'/><item href='stylesheet.css' id='css' media-type='text/css'/><item href='page.xhtml' id='page' media-type='application/xhtml+xml'/><item href='toc.ncx' media-type='application/x-dtbncx+xml' id='ncx'/></manifest><spine toc='ncx'>
+<itemref idref='page'/>
+<itemref idref='catalog'/>
+<itemref idref='id1'/>
+<itemref idref='id2'/>
+<itemref idref='id3'/>
+<itemref idref='id4'/>
+<itemref idref='id5'/>
+<itemref idref='id6'/>
+<itemref idref='id7'/>
+<itemref idref='id8'/>
+<itemref idref='id9'/>
+<itemref idref='id10'/>
+<itemref idref='id11'/>
+<itemref idref='id12'/>
+<itemref idref='id13'/>
+<itemref idref='id14'/>
+<itemref idref='id15'/>
+<itemref idref='id16'/>
+<itemref idref='id17'/>
+<itemref idref='id18'/>
+<itemref idref='id19'/>
+<itemref idref='id20'/>
+<itemref idref='id21'/>
+<itemref idref='id22'/>
+<itemref idref='id23'/>
+<itemref idref='id24'/>
+<itemref idref='id25'/>
+<itemref idref='id26'/>
+<itemref idref='id27'/>
+<itemref idref='id28'/>
+<itemref idref='id29'/>
+<itemref idref='id30'/>
+<itemref idref='id31'/>
+<itemref idref='id32'/>
+<itemref idref='id33'/>
+<itemref idref='id34'/>
+<itemref idref='id35'/>
+<itemref idref='id36'/>
+<itemref idref='id37'/>
+<itemref idref='id38'/>
+<itemref idref='id39'/>
+<itemref idref='id40'/>
+<itemref idref='id41'/>
+<itemref idref='id42'/>
+<itemref idref='id43'/>
+<itemref idref='page'/>
+</spine>
+
+<guide>
+<reference href='catalog.xhtml' type='toc' title='目录'/>
+</guide>
+</package>

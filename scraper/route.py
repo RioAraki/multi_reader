@@ -130,13 +130,16 @@ def write_in_md(url):
 def get_epub_content(url, folder):
     all_chapters = route(url)
     counter = 1
-    header0 = "<?xml version='1.0' encoding='utf-8' standalone='no'?><!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.1//EN'" \
-             " 'http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd'><html xmlns='http://www.w3.org/1999/xhtml'" \
-             " xml:lang='zh-CN'><head><title>"
-    header1 = "</title><link href='stylesheet.css' type='text/css' rel='stylesheet'/><style type='text/css'>@page { margin-bottom: 5.000000pt; margin-top: 5.000000pt; }</style></head><body>"
-    h20 = "<h2><span style='border-bottom:1px solid'>"
-    h21 = "</span></h2><p>"
-    tail = "</p><div class='mbppagebreak'></div></body></html>"
+    header0 = "<?xml version='1.0' encoding='utf-8' standalone='no'?>\n<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.1//EN'" \
+             " 'http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd'>\n<html xmlns='http://www.w3.org/1999/xhtml'" \
+             " xml:lang='zh-CN'>\n<head>\n<title>"
+    header1 = "</title>\n<link href='stylesheet.css' type='text/css' rel='stylesheet'/>\n" \
+              "<style type='text/css'>@page { margin-bottom: 5.000000pt; margin-top: 5.000000pt; }</style>\n" \
+              "</head>\n" \
+              "<body>\n"
+    h20 = "<h2>\n<span style='border-bottom:1px solid'>"
+    h21 = "</span>\n</h2>\n<p>"
+    tail = "</p>\n<div class='mbppagebreak'></div></body></html>"
     title_dict = {}
     for link in all_chapters:
         res = requests.get(link)
@@ -156,9 +159,9 @@ def get_epub_content(url, folder):
 
 def META_INF(dirname):
     meta_inf_dir = dirname + '/META-INF'
-    meta_inf_content = "<?xml version='1.0'?><container version='1.0' xmlns='urn:oasis:names:tc:opendocument:xmlns:" \
-                       "container'><rootfiles><rootfile full-path='content.opf' media-type='application/oe" \
-                       "bps-package+xml'/></rootfiles></container>"
+    meta_inf_content = "<?xml version='1.0'?>\n<container version='1.0' xmlns='urn:oasis:names:tc:opendocument:xmlns:" \
+                       "container'>\n<rootfiles>\n<rootfile full-path='content.opf' media-type='application/oe" \
+                       "bps-package+xml'/>\n</rootfiles>\n</container>"
     os.makedirs(meta_inf_dir, exist_ok=True)
     containxml_path = meta_inf_dir + '/container.xml'
     with open(containxml_path, "w") as f:
@@ -167,16 +170,16 @@ def META_INF(dirname):
 
 
 def catalogxhtml(chapter_dict, title, dirname):
-    head1 = "<?xml version='1.0' encoding='utf-8' standalone='no'?><!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.1//EN" \
-            "' 'http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd'><html xmlns='http://www.w3.org/1999/xhtml' xml:lang='" \
-            "zh-CN'><head><title>"
-    head2 = "</title><link href='stylesheet.css' type='text/css' rel='stylesheet'/><style type='text/css'>@page " \
-            "{ margin-bottom: 5.000000pt; margin-top: 5.000000pt; }</style></head><body><h1>目录<br/>Content</h1><ul>"
-    tail = "</ul><div class='mbppagebreak'></div></body></html>"
+    head1 = "<?xml version='1.0' encoding='utf-8' standalone='no'?>\n<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.1//EN" \
+            "' 'http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd'>\n<html xmlns='http://www.w3.org/1999/xhtml' xml:lang='" \
+            "zh-CN'>\n<head>\n<title>"
+    head2 = "</title>\n<link href='stylesheet.css' type='text/css' rel='stylesheet'/><style type='text/css'>\n@page " \
+            "{ margin-bottom: 5.000000pt; margin-top: 5.000000pt; }</style>\n</head>\n<body>\n<h1>目录<br/>Content</h1>\n<ul>"
+    tail = "</ul>\n<div class='mbppagebreak'></div>\n</body>\n</html>"
 
     list1 = "<li class='catalog'><a href='chapter_"
     list2 = ".xhtml'>"
-    list3 = "</a></li>"
+    list3 = "</a></li>\n"
 
     content = head1 + title + head2
 
@@ -198,25 +201,26 @@ def mimetype(dirname):
 
 
 def contentopf(chapter_dict, title, author, intro, source_site, source_url, dirname):
-    head1 = "<?xml version='1.0' encoding='utf-8'?><package xmlns='http://www.idpf.org/2007/opf' " \
-            "xmlns:dc='http://purl.org/dc/elements/1.1/' unique-identifier='bookid' version='2.0'> " \
-            " <metadata xmlns:dc='http://purl.org/dc/elements/1.1/' xmlns:opf='http://www.idpf.org/2007/opf'>"
-    dctitle = "<dc:title>"+title+"</dc:title>"
-    dccreator = "<dc:creator>"+author+"</dc:creator>"
-    dcintro = "<dc:intro>"+intro+"</dc:intro>"
-    dclanguage = "<dc:language>zh-cn</dc:language>"
-    dccontributor = "<dc:contributor>" + source_site + ' ' + source_url + "</dc:contributor>"
-    dcpublisher = "<dc:publisher>"+source_url+"</dc:publisher>"
-    dcsubject = "<dc:subject>"+source_site+"</dc:subject>"
-    head2 = "</metadata><manifest>"
+    head1 = "<?xml version='1.0' encoding='utf-8'?>\n\n<package xmlns='http://www.idpf.org/2007/opf' " \
+            "xmlns:dc='http://purl.org/dc/elements/1.1/' unique-identifier='bookid' version='2.0'>\n\n " \
+            " <metadata xmlns:dc='http://purl.org/dc/elements/1.1/' xmlns:opf='http://www.idpf.org/2007/opf'>\n"
+    dctitle = "<dc:title>"+title+"</dc:title>\n"
+    dccreator = "<dc:creator>"+author+"</dc:creator>\n"
+    dcintro = "<dc:description>"+intro+"</dc:description>\n"
+    dclanguage = "<dc:language>zh-cn</dc:language>\n"
+    dccontributor = "<dc:contributor>" + source_site + ' ' + source_url + "</dc:contributor>\n"
+    dcpublisher = "<dc:publisher>"+source_url+"</dc:publisher>\n"
+    dcsubject = "<dc:subject>"+source_site+"</dc:subject>\n"
+    dcidentifier = "<dc:identifier id='bookid'>pymtrdr:000001</dc:identifier>"
+    head2 = "</metadata>\n\n<manifest>"
 
-    content = head1 + dctitle + dccreator + dcintro + dclanguage + dccontributor + dcpublisher + dcsubject + head2
+    content = head1 + dctitle + dccreator + dcintro + dclanguage + dccontributor + dcpublisher + dcsubject + dcidentifier + head2
 
     item1 = "<item href='chapter_"
     item2 = ".xhtml' id='id"
-    item3 = "' media-type='application/xhtml+xml'/>"
+    item3 = "' media-type='application/xhtml+xml'/>\n"
     idref1 = "<itemref idref='id"
-    idref2 = "'/>"
+    idref2 = "'/>\n"
     idref = ""
 
     for chapter, title in chapter_dict.items():
@@ -224,12 +228,12 @@ def contentopf(chapter_dict, title, author, intro, source_site, source_url, dirn
         content += item
         idref += idref1 + str(chapter) + idref2
 
-    item_other = "<item href='catalog.xhtml' id='catalog' media-type='application/xhtml+xml'/><item href='stylesheet." \
-                 "css' id='css' media-type='text/css'/><item href='page.xhtml' id='page' media-type='application/xhtm" \
-                 "l+xml'/><item href='toc.ncx' media-type='application/x-dtbncx+xml' id='ncx'/></manifest>"
-    spine_head = "<spine toc='ncx'><itemref idref='page'/><itemref idref='catalog'/>"
-    tail = "<itemref idref='page'/></spine><guide><reference href='catalog.xhtml' type='toc' title='目录'/>" \
-           "</guide></package>"
+    item_other = "<item href='catalog.xhtml' id='catalog' media-type='application/xhtml+xml'/>\n<item href='stylesheet." \
+                 "css' id='css' media-type='text/css'/>\n<item href='page.xhtml' id='page' media-type='application/xhtm" \
+                 "l+xml'/>\n<item href='toc.ncx' media-type='application/x-dtbncx+xml' id='ncx'/>\n</manifest>"
+    spine_head = "<spine toc='ncx'>\n<itemref idref='page'/>\n<itemref idref='catalog'/>\n"
+    tail = "<itemref idref='page'/>\n</spine>\n\n<guide>\n<reference href='catalog.xhtml' type='toc' title='目录'/>" \
+           "\n</guide>\n</package>"
     content+= item_other + spine_head + idref + tail
 
     with open(dirname+'/content.opf', "wb") as f:
@@ -238,20 +242,21 @@ def contentopf(chapter_dict, title, author, intro, source_site, source_url, dirn
 
 
 def pagexhtml(title, author, intro, source_site, source_url, dirname):
-    head1 = "<?xml version='1.0' encoding='utf-8' standalone='no'?><!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.1//EN'" \
-            " 'http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd'><html xmlns='http://www.w3.org/1999/xhtml' xml:lang='" \
-            "zh-CN'><head><meta http-equiv='Content-Type' content='text/html; charset=UTF-8'/><title>书籍信息</title>" \
-            "<style type='text/css' title='override_css'>@page {padding: 0pt; margin:0pt}body { text-align: left;" \
-            " padding:0pt; margin: 0pt;font-size: 1.0em}ul,li{list-style-type:none;margin:0;padding:0;line-height:" \
-            " 2.5em;font-size: 0.8em}div,h1,h2 { margin: 0pt; padding: 0pt}h1{font-size:1.2em}h2 {font-size: 1.1em}" \
-            ".copyright{color:#ff4500}</style></head><body><div><h1>"
-    head2 = "</h1><h2>作者："
-    head3 = "</h2><ul><li>内容简介："
-    head4 = "</li><li class='copyright'>由 multi_reader 开源项目提供epub下载</li><li class='copyright'>书籍内容由"
+    head1 = "<?xml version='1.0' encoding='utf-8' standalone='no'?>\n<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.1//EN'" \
+            " 'http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd'>\n<html xmlns='http://www.w3.org/1999/xhtml' xml:lang='" \
+            "zh-CN'>\n<head>\n<meta http-equiv='Content-Type' content='text/html; charset=UTF-8'/>\n<title>书籍信息</title>\n" \
+            "<style type='text/css' title='override_css'>\n@page {padding: 0pt; margin:0pt}\nbody { text-align: left;" \
+            " padding:0pt; margin: 0pt;font-size: 1.0em}\nul,li{list-style-type:none;margin:0;padding:0;line-height:" \
+            " 2.5em;font-size: 0.8em}\ndiv,h1,h2 { margin: 0pt; padding: 0pt}\nh1{font-size:1.2em}\nh2 {font-size: 1.1em}" \
+            "\n.copyright{color:#ff4500}\n</style>\n</head>\n<body>\n<div>\n<h1>"
+    head2 = "</h1>\n<h2>作者："
+    head3 = "</h2>\n<ul>\n<li>内容简介："
+    head4 = "</li>\n<li class='copyright'>由 multi_reader 开源项目提供epub下载，可访问 https://github.com/" \
+            "RioAraki/multi_reader 查看详情\n欢迎 fork, star, 提issue 等。</li>\n<li class='copyright'>书籍内容由"
     head5 = "提供，请访问："
-    head6 = "</li></ul></div></body></html>"
+    head6 = "</li>\n</ul>\n</div>\n</body>\n</html>"
     content = head1 + title + head2 + author + head3 + intro + head4 + source_site + head5 + source_url + head6
-    with open(dirname+'/content.opf', "wb") as f:
+    with open(dirname+'/page.xhtml', "wb") as f:
         f.write(content.encode('utf-8'))
         f.close()
 
@@ -271,17 +276,19 @@ def stylesheetcss(dirname):
 
 # TODO: get more ideas on what meta in head portion does
 def tocncx(chapter_dict, title, author, dirname):
-    head1 = "<?xml version='1.0' encoding='utf-8'?><ncx xmlns='http://www.daisy.org/z3986/2005/ncx/' version='2005-1'><docTitle><text>"
-    head2 = "</text></docTitle><docAuthor><text>"
-    head3 = "</text></docAuthor><navMap>"
-    tail = "</navMap></ncx>"
+    head1 = "<?xml version='1.0' encoding='utf-8'?>\n<ncx xmlns='http://www.daisy.org/z3986/2005/ncx/' version='2005-1'>\n" \
+            "<head>\n<meta content='pymtrdr:000001' name='dtb:uid'/>\n<meta content='2' name='dtb:depth'/>\n<meta content='0' name='dtb:totalPageCount'/>\n" \
+            "<meta content='0' name='dtb:maxPageNumber'/>\n</head>\n<docTitle>\n<text>"
+    head2 = "</text>\n</docTitle>\n\n<docAuthor>\n<text>"
+    head3 = "</text>\n</docAuthor>\n\n<navMap>"
+    tail = "</navMap>\n\n</ncx>"
 
 
     nav1 = "<navPoint id='chapter_"
     nav2 = "' playOrder='"
     nav3 = "'><navLabel><text>"
     nav4 = "</text></navLabel><content src='chapter_"
-    nav5 = ".xhtml'/></navPoint>"
+    nav5 = ".xhtml'/></navPoint>\n"
 
     content = head1 + title + head2 + author + head3
     for chapter, title in chapter_dict.items():
@@ -356,20 +363,6 @@ if __name__ == "__main__":
     # Test build epub
     build_epub(kanunu)
 
-
-
-
-    # # TEST EPUB
-    # # get_epub_content(ty2016)
-    #
-    # # TEST get_intro/ get_author
-    # url = ty2016
-    # res = requests.get(url)
-    # res.encoding = 'gb2312'
-    # page = re.sub('&nbsp;', ' ', res.text)  # for all text in res, change &nbsp to ' '
-    # soup = BeautifulSoup(page, 'html.parser')
-    # get_author(soup, get_source(url))
-    # # get_intro(soup, get_source(url))
 
 
 
