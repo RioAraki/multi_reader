@@ -1,25 +1,22 @@
+#!/usr/bin/env python
 import os
 import zipfile
-# import StringIO
 
-def compress(folder):
+def zipdir(path, ziph):
+    # ziph is zipfile handle
 
-    filenames = []
+    # This method only copy all *files*
+    for root, dirs, files in os.walk(path):
+        os.chdir('SDYXZ')
+        ziph.write('META-INF/container.xml')
+        for file in files:
+            ziph.write(file)
 
-    # zip name before the extension
-    zip_subdir = 'filename'
 
-    # zip name with extension
-    zip_filename = '%s.zip' % zip_subdir
-
-    zf = zipfile.ZipFile("new_zip_files", "w")
-    # Open StringIO to grab in-memory ZIP contents
-    # s = StringIO.StringIO()
-
-    for fpath in filenames:
-        fdir, fname = os.path.split(fpath)
-        zip_path = os.path.join(zip_subdir, fname)
-
-        zf.write(fpath, zip_path)
+def main():
+    pass
 
 if __name__ == '__main__':
+    zipf = zipfile.ZipFile('射雕英雄传.epub', 'w', zipfile.ZIP_DEFLATED)
+    zipdir('SDYXZ', zipf)
+    zipf.close()
