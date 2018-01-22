@@ -351,8 +351,7 @@ def build_epub(url):
     # create tocncx
     tocncx(chapter_dict, title, author, dirname)
 
-def compress():
-    pass
+    return title
 
 if __name__ == "__main__":
 
