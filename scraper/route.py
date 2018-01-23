@@ -9,7 +9,7 @@ from bs4 import BeautifulSoup
 # Current supported list:
 
 # kanunu8, index style: 1. https://www.kanunu8.com/files/yqxs/201103/1863.html  2. https://www.kanunu8.com/book/4333/
-# text style: 1. https://www.kanunu8.com/files/yqxs/201103/1863/43617.html 2.
+# content style: 1. https://www.kanunu8.com/files/yqxs/201103/1863/43617.html 2.
 # ty2016, index style: 1. http://www.ty2016.net/book/Murakami_13/
 # dushu369
 # txshuku
