@@ -14,7 +14,14 @@ def search(name):
         cx='006143628057480232827:4svfte2xdd4',
     ).execute()
 
+    for i in range(0,3):
+        print (res['items'][i])
+
     return res['items'][0]['link']
 
+def check_validity(link):
+    pass
+
+
 if __name__ == '__main__':
-    print (search())
+    print (search('水浒传'))

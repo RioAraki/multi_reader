@@ -3,7 +3,19 @@ import re
 import os
 from bs4 import BeautifulSoup
 
-# TODO: 添加对duhsu369的支持
+# TODO: 由于之后可能会支持的小说网站众多，所以需要重构爬虫部分，以有更好的可拓展性
+# TODO：最好全程只需要输入url一次，之后尽量用soup
+# TODO: 有时候index本身会有两层目录
+# Current supported list:
+
+# kanunu8, index style: 1. https://www.kanunu8.com/files/yqxs/201103/1863.html  2. https://www.kanunu8.com/book/4333/
+# text style: 1. https://www.kanunu8.com/files/yqxs/201103/1863/43617.html 2.
+# ty2016, index style: 1. http://www.ty2016.net/book/Murakami_13/
+# dushu369
+# txshuku
+# wenku8
+# 23qb
+
 
 def get_source(url):
     if 'kanunu' in url:
@@ -53,7 +65,6 @@ def find_index(url):
 def route(url):
     page = requests.get(url)
     soup = BeautifulSoup(page.content, 'html.parser')
-
     book_idx = find_index(url)
     if 'kanunu' in url or 'ty2016' in url or '99lib' in url:
         return parse_index(soup, book_idx, url)
