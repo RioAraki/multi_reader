@@ -6,6 +6,8 @@ from bs4 import BeautifulSoup
 # TODO: 由于之后可能会支持的小说网站众多，所以需要重构源头选择部分，以有更好的可拓展性
 # TODO：最好全程只需要输入url一次，之后尽量用soup
 # TODO: 有时候index本身会有两层目录
+
+
 # Current supported list:
 
 # kanunu8: 1. https://www.kanunu8.com/files/yqxs/201103/1863.html  2. https://www.kanunu8.com/book/4333/
@@ -24,17 +26,46 @@ from bs4 import BeautifulSoup
 # content: 1. http://book.sfacg.com/Novel/108421/183067/1512447/
 
 
-def get_source(url):
-    if 'kanunu' in url:
-        if url.split('/')[-1] and 'index' not in url.split('/')[-1]:
-            return 'kanunu'
+
+def get_source_info(url):
+    # 1. check which source does the url comes from, return source in string
+    # 2. find the book index according to the source
+    # 3. parse the index and get the link of each chapter
+    source = ''
+    if 'kanunu' in url: # kanunu 1 & 2
+        if url.split('/')[-1]:
+            source = 'kanunu'
+            index = url.split('/')[-1].split('.')[0]
         else:
-            return 'kanunu1'
+            source = 'kanunu1'
+            index = url.split('/')[-2]
     elif 'ty2016' in url:
-        return 'ty2016'
-    elif '99lib' in url:
-        return '99lib'
-    return False
+        source = 'ty2016'
+        index = url.split('/')[-2]
+    elif 'dushu369' in url:
+        source = 'dushu369'
+        index = url.split('/')[-2]
+    elif 'txshuku' in url:
+        source = 'txshuku'
+    elif 'sfacg' in url:
+        source = 'sfacg'
+    return source, index
+
+
+
+
+
+# def get_source(url):
+#     if 'kanunu' in url:
+#         if url.split('/')[-1] and 'index' not in url.split('/')[-1]:
+#             return 'kanunu'
+#         else:
+#             return 'kanunu1'
+#     elif 'ty2016' in url:
+#         return 'ty2016'
+#     elif '99lib' in url:
+#         return '99lib'
+#     raise
 
 # 有一个 parse link 的潜在问题，https://www.kanunu8.com/book2/10741/可以正确 parse，但https://www.kanunu8.com/book2/10741/index.html无法正确parse
 def parse_index(soup, book_idx, url):
@@ -373,15 +404,27 @@ def build_epub(url):
 
 if __name__ == "__main__":
 
-    kanunu = 'https://www.kanunu8.com/wuxia/201102/1625.html'
-    kanunu1 = 'https://www.kanunu8.com/book2/10752/'
-    kanunu1_1 = 'https://www.kanunu8.com/book2/10741/'
+
+    kanunu = 'https://www.kanunu8.com/files/yqxs/201103/1863.html'
+    kanunu1 = 'https://www.kanunu8.com/book/4333/'
+    kc = 'https://www.kanunu8.com/files/yqxs/201103/1863/43617.html'
+    kc1 = 'https://www.kanunu8.com/book/4333/51335.html'
+
     ty2016 = 'http://www.ty2016.net/book/Murakami_13/'
-    lib99 = 'http://www.99lib.net/book/8007/index.htm'
+    tc = 'http://www.ty2016.net/book/Murakami_13/67710.html'
+
+    dushu369 = 'http://www.dushu369.com/waiguomingzhu/bngd/'
+    dc = 'http://www.dushu369.com/waiguomingzhu/HTML/63294.html'
+
+    txshuku = 'http://book.txshuku.net/dir/352.html'
+    txc = 'http://book.txshuku.net/chapter/352/29636.html'
+
+    sfacg = 'http://book.sfacg.com/Novel/108421/MainIndex/'
+    sc = 'http://book.sfacg.com/Novel/108421/183067/1512447/'
 
     # Test build epub
-    build_epub(kanunu)
-
+    # build_epub(kanunu)
+    print (get_source_info(kanunu))
 
 
 
