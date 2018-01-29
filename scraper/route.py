@@ -3,18 +3,25 @@ import re
 import os
 from bs4 import BeautifulSoup
 
-# TODO: 由于之后可能会支持的小说网站众多，所以需要重构爬虫部分，以有更好的可拓展性
+# TODO: 由于之后可能会支持的小说网站众多，所以需要重构源头选择部分，以有更好的可拓展性
 # TODO：最好全程只需要输入url一次，之后尽量用soup
 # TODO: 有时候index本身会有两层目录
 # Current supported list:
 
-# kanunu8, index style: 1. https://www.kanunu8.com/files/yqxs/201103/1863.html  2. https://www.kanunu8.com/book/4333/
-# content style: 1. https://www.kanunu8.com/files/yqxs/201103/1863/43617.html 2.
-# ty2016, index style: 1. http://www.ty2016.net/book/Murakami_13/
-# dushu369
-# txshuku
-# wenku8
-# 23qb
+# kanunu8: 1. https://www.kanunu8.com/files/yqxs/201103/1863.html  2. https://www.kanunu8.com/book/4333/
+# content: 1. https://www.kanunu8.com/files/yqxs/201103/1863/43617.html 2. https://www.kanunu8.com/book/4333/51335.html
+
+# ty2016: 1. http://www.ty2016.net/book/Murakami_13/
+# content: 1.http://www.ty2016.net/book/Murakami_13/67710.html
+
+# dushu369: 1. http://www.dushu369.com/waiguomingzhu/bngd/
+# content: 1. http://www.dushu369.com/waiguomingzhu/HTML/63294.html
+
+# txshuku: 1. http://book.txshuku.net/dir/352.html
+# content: 1. http://book.txshuku.net/chapter/352/29636.html
+
+# sfacg: 1. http://book.sfacg.com/Novel/108421/MainIndex/
+# content: 1. http://book.sfacg.com/Novel/108421/183067/1512447/
 
 
 def get_source(url):
