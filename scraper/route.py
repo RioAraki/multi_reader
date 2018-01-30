@@ -24,7 +24,7 @@ from bs4 import BeautifulSoup
 
 # sfacg: 1. http://book.sfacg.com/Novel/108421/MainIndex/
 # content: 1. http://book.sfacg.com/Novel/108421/183067/1512447/
-
+# TODO: sfacg has a very wired layout, the index contains chapter information
 
 
 def get_source_info(url):
@@ -52,81 +52,72 @@ def get_source_info(url):
     elif 'sfacg' in url:
         source = 'sfacg'
         index = url.split('/')[-3]
-    print (source, index)
     return source, index
+
+
+def kanunu(all_chapter, href, index):
+    if source == 'kanunu' and href and index in href:
+        pos = url.index(index)
+        abs_link = url[:pos] + href
+        if abs_link not in all_chapter:
+            all_chapter.append(abs_link)
+
+
+def kanunu1(all_chapter, href, index):
+    if source == 'kanunu1' and href and '/' not in href:
+        abs_link = url + href
+        if abs_link not in all_chapter:
+            all_chapter.append(abs_link)
+
+
+def ty2016(all_chapter, href, index):
+    if source == 'ty2016' and href and '/' not in href and '.html' in href:
+        abs_link = url + href
+        if abs_link not in all_chapter:
+            all_chapter.append(abs_link)
+
+
+def dushu369(all_chapter, href, index):
+    if source == 'dushu369' and href and index in href and any(char.isdigit() for char in href):
+        pos = url.index(index) - 1
+        abs_link = url[:pos] + href
+        if abs_link not in all_chapter:
+            all_chapter.append(abs_link)
+
+
+def txshuku(all_chapter, href, index):
+    if source == 'txshuku' and href and 'chapter' in href:
+        abs_link = href
+        if abs_link not in all_chapter:
+            all_chapter.append(abs_link)
+
+
+def sfacg(all_chapter, href, index):
+    if source == 'sfacg' and 'Novel' in href and index in href and href.split('/')[-3] != 'Novel':
+        url_pos = url.index(index)
+        href_pos = href.index(index)
+        abs_link = url[:url_pos] + href[href_pos:]
+        if abs_link not in all_chapter:
+            all_chapter.append(abs_link)
+
 
 def parse_index(soup, source, index, url):
     all_chapter = []
+    #TODO: make support global
+    support = {'kanunu': kanunu,
+               'kanunu1':kanunu1,
+               'ty2016':ty2016,
+               'dushu369':dushu369,
+               'txshuku':txshuku,
+               'sfacg':sfacg}
+
     for link in soup.find_all('a'):
         href = link.get('href')
-        print (href)
-        if source == 'kanunu' and href and index in href:
-            pos = url.index(index)
-            abs_link = url[:pos] + href
-            print(abs_link)
-        elif source == 'kanunu1' and href and '/' not in href:
-            abs_link = url + href
-            print(abs_link)
-        elif source == 'ty2016' and href and '/' not in href and '.html' in href:
-            abs_link = url + href
-            print(abs_link)
-        elif source == 'dushu369' and href and index in href and any(char.isdigit() for char in href):
-            pos = url.index(index)-1
-            abs_link = url[:pos] + href
-            print('abs: ' + abs_link)
-        elif source == 'txshuku'
+        if source in support:
+            support[source](all_chapter, href, index)
+    return all_chapter
 
-
-        # if abs_link not in all_chapter:
-        #     all_chapter.append(abs_link)
-
-
-
-
-
-# 有一个 parse link 的潜在问题，https://www.kanunu8.com/book2/10741/可以正确 parse，但https://www.kanunu8.com/book2/10741/index.html无法正确parse
-# def parse_index(soup, index, url):
-#     all_chapter = []
-#     for link in soup.find_all('a'):
-#         href = link.get('href')
-#         if url.split('/')[-1]: # format like 'https://www.kanunu8.com/wuxia/201102/1625.html'
-#             if href and book_idx in href:
-#                 if book_idx in url:
-#                     if 'kanunu' in url:
-#                         pos = url.index(book_idx)
-#                         abs_link = url[:pos] + href
-#                     if abs_link not in all_chapter:
-#                         all_chapter.append(abs_link)
-#         else: # format like 'https://www.kanunu8.com/book2/10752/'
-#             if href and '/' not in href and '.html' in href:
-#                 abs_link = url + href
-#                 all_chapter.append(abs_link)
-#     return all_chapter
-
-
-def find_index(url):
-    if '99lib' in url:
-        return url.split('/')[-2]
-    elif 'kanunu' or 'ty2016' in url:
-        if url.split('/')[-1]: # 'https://www.kanunu8.com/wuxia/201102/1625.html'
-            return url.split('/')[-1].split('.')[0]
-        else:
-            return url.split('/')[-2]
-    else:
-        print ('unable to find index from the url given')
-        return False
-
-# TODO: 回头可以思考怎么重构一下，改成input 为 soup rather than url，以及这个function可能没必要
-def route(url):
-    page = requests.get(url)
-    soup = BeautifulSoup(page.content, 'html.parser')
-    book_idx = find_index(url)
-    if 'kanunu' in url or 'ty2016' in url or '99lib' in url:
-        return parse_index(soup, book_idx, url)
-    print ('only accept url from kanunu/ tianya/ 99lib')
-    return False
-
-
+# change it the same way as parse index
 def get_content(soup, source):
     if source == 'kanunu':
         content = str(soup.body.div.find_all('table')[4].find_all('td')[1].p)
@@ -422,26 +413,26 @@ def build_epub(url):
 if __name__ == "__main__":
 
 
-    kanunu = 'https://www.kanunu8.com/files/yqxs/201103/1863.html'
-    kanunu1 = 'https://www.kanunu8.com/book/4333/'
+    kanunu_index = 'https://www.kanunu8.com/files/yqxs/201103/1863.html'
+    kanunu1_index = 'https://www.kanunu8.com/book/4333/'
     kc = 'https://www.kanunu8.com/files/yqxs/201103/1863/43617.html'
     kc1 = 'https://www.kanunu8.com/book/4333/51335.html'
 
-    ty2016 = 'http://www.ty2016.net/book/Murakami_13/'
+    ty2016_index = 'http://www.ty2016.net/book/Murakami_13/'
     tc = 'http://www.ty2016.net/book/Murakami_13/67710.html'
 
-    dushu369 = 'http://www.dushu369.com/waiguomingzhu/bngd/'
+    dushu369_index = 'http://www.dushu369.com/waiguomingzhu/bngd/'
     dc = 'http://www.dushu369.com/waiguomingzhu/HTML/63294.html'
 
-    txshuku = 'http://book.txshuku.net/dir/352.html'
+    txshuku_index = 'http://book.txshuku.net/dir/352.html'
     txc = 'http://book.txshuku.net/chapter/352/29636.html'
 
-    sfacg = 'http://book.sfacg.com/Novel/108421/MainIndex/'
+    sfacg_index = 'http://book.sfacg.com/Novel/108421/MainIndex/'
     sc = 'http://book.sfacg.com/Novel/108421/183067/1512447/'
 
     # Test build epub
     # build_epub(kanunu)
-    url = dushu369
+    url = sfacg_index
     source, index = get_source_info(url)
 
     res = requests.get(url)
@@ -449,7 +440,7 @@ if __name__ == "__main__":
     page = re.sub('&nbsp;', ' ', res.text)  # for all text in res, change &nbsp to ' '
     soup = BeautifulSoup(page, 'html.parser')
 
-    parse_index(soup, source, index, url)
+    print (parse_index(soup, source, index, url))
 
 
 
