@@ -32,6 +32,7 @@ def get_source_info(url):
     # 2. find the book index according to the source
     # 3. parse the index and get the link of each chapter
     source = ''
+    index = ''
     if 'kanunu' in url: # kanunu 1 & 2
         if url.split('/')[-1]:
             source = 'kanunu'
@@ -44,47 +45,63 @@ def get_source_info(url):
         index = url.split('/')[-2]
     elif 'dushu369' in url:
         source = 'dushu369'
-        index = url.split('/')[-2]
+        index = url.split('/')[-3]
     elif 'txshuku' in url:
         source = 'txshuku'
+        index = url.split('/')[-1].split('.')[0]
     elif 'sfacg' in url:
         source = 'sfacg'
+        index = url.split('/')[-3]
+    print (source, index)
     return source, index
 
-
-
-
-
-# def get_source(url):
-#     if 'kanunu' in url:
-#         if url.split('/')[-1] and 'index' not in url.split('/')[-1]:
-#             return 'kanunu'
-#         else:
-#             return 'kanunu1'
-#     elif 'ty2016' in url:
-#         return 'ty2016'
-#     elif '99lib' in url:
-#         return '99lib'
-#     raise
-
-# 有一个 parse link 的潜在问题，https://www.kanunu8.com/book2/10741/可以正确 parse，但https://www.kanunu8.com/book2/10741/index.html无法正确parse
-def parse_index(soup, book_idx, url):
+def parse_index(soup, source, index, url):
     all_chapter = []
     for link in soup.find_all('a'):
         href = link.get('href')
-        if url.split('/')[-1]: # format like 'https://www.kanunu8.com/wuxia/201102/1625.html'
-            if href and book_idx in href:
-                if book_idx in url:
-                    if 'kanunu' in url:
-                        pos = url.index(book_idx)
-                        abs_link = url[:pos] + href
-                    if abs_link not in all_chapter:
-                        all_chapter.append(abs_link)
-        else: # format like 'https://www.kanunu8.com/book2/10752/'
-            if href and '/' not in href and '.html' in href:
-                abs_link = url + href
-                all_chapter.append(abs_link)
-    return all_chapter
+        print (href)
+        if source == 'kanunu' and href and index in href:
+            pos = url.index(index)
+            abs_link = url[:pos] + href
+            print(abs_link)
+        elif source == 'kanunu1' and href and '/' not in href:
+            abs_link = url + href
+            print(abs_link)
+        elif source == 'ty2016' and href and '/' not in href and '.html' in href:
+            abs_link = url + href
+            print(abs_link)
+        elif source == 'dushu369' and href and index in href and any(char.isdigit() for char in href):
+            pos = url.index(index)-1
+            abs_link = url[:pos] + href
+            print('abs: ' + abs_link)
+        elif source == 'txshuku'
+
+
+        # if abs_link not in all_chapter:
+        #     all_chapter.append(abs_link)
+
+
+
+
+
+# 有一个 parse link 的潜在问题，https://www.kanunu8.com/book2/10741/可以正确 parse，但https://www.kanunu8.com/book2/10741/index.html无法正确parse
+# def parse_index(soup, index, url):
+#     all_chapter = []
+#     for link in soup.find_all('a'):
+#         href = link.get('href')
+#         if url.split('/')[-1]: # format like 'https://www.kanunu8.com/wuxia/201102/1625.html'
+#             if href and book_idx in href:
+#                 if book_idx in url:
+#                     if 'kanunu' in url:
+#                         pos = url.index(book_idx)
+#                         abs_link = url[:pos] + href
+#                     if abs_link not in all_chapter:
+#                         all_chapter.append(abs_link)
+#         else: # format like 'https://www.kanunu8.com/book2/10752/'
+#             if href and '/' not in href and '.html' in href:
+#                 abs_link = url + href
+#                 all_chapter.append(abs_link)
+#     return all_chapter
 
 
 def find_index(url):
@@ -424,7 +441,15 @@ if __name__ == "__main__":
 
     # Test build epub
     # build_epub(kanunu)
-    print (get_source_info(kanunu))
+    url = dushu369
+    source, index = get_source_info(url)
+
+    res = requests.get(url)
+    res.encoding = 'gb2312'
+    page = re.sub('&nbsp;', ' ', res.text)  # for all text in res, change &nbsp to ' '
+    soup = BeautifulSoup(page, 'html.parser')
+
+    parse_index(soup, source, index, url)
 
 
 
