@@ -42,6 +42,7 @@ def kanunu1(all_chapter, href, index):
             all_chapter.append(abs_link)
 
 
+
 def ty2016(all_chapter, href, index):
     if source == 'ty2016' and href and '/' not in href and '.html' in href:
         abs_link = url + href
@@ -73,39 +74,61 @@ def sfacg(all_chapter, href, index):
             all_chapter.append(abs_link)
 
 # Support provides all info about different supported site, the orders are:
-# site name (correspond to different method to extract chapter link)/ content/ title/ author/ intro
-support = {'kanunu': [kanunu, lambda: str(soup.find_all('p')[0])],
-           'kanunu1':[kanunu1, lambda: str(soup.find_all('p')[0])],
-           'ty2016':[ty2016, lambda: str(soup.find_all('p')[1])],
-           'dushu369':[dushu369, lambda: str(soup.find_all("td", {"class": "content"})[0])],
-           'txshuku':[txshuku, lambda: str(soup.find_all('div', {"class":"contentbox"})[0])],
-           'sfacg':[sfacg, lambda: str(soup.find_all('div', {'id':'ChapterBody'})[0])]}
+# site name (correspond to different method to extract chapter link)/ index/ content/ title/ author/ intro
+support = {'kanunu': [kanunu,
+                      lambda: url.split('/')[-1].split('.')[0], # index in url
+                      lambda: str(soup.find_all('p')[0]), # content
+                      lambda: soup.find_all('h2')[0].text, # main title
+                      lambda: soup.find_all('h2')[0].text, # chapter title
+                      lambda: soup.find_all('h2')[0].text],
+           'kanunu1':[kanunu1,
+                      lambda: url.split('/')[-2], # index in url
+                      lambda: str(soup.find_all('p')[0]), # content
+                      lambda: soup.find_all('h1')[0].text, # main title
+                      lambda: soup.find_all('h2')[0].text, # chapter title
+                      lambda: soup.find_all('h2')[0].text],
+           'ty2016':[ty2016,
+                     lambda: url.split('/')[-2], # index in url
+                     lambda: str(soup.find_all('p')[1]), # content
+                     lambda: soup.find_all('h1')[0].text, # main title
+                     lambda: soup.find_all('h2')[0].text, # chapter title
+                     lambda: url.split('/')[-2]],
+           'dushu369':[dushu369,
+                       lambda: url.split('/')[-3], # index in url
+                       lambda: str(soup.find_all("td", {"class": "content"})[0]), # content
+                       lambda: soup.find_all('td', {'class':'cntitle'})[0].text.split('《')[1][:-1], # main title
+                       lambda: soup.find_all('h2')[0].text, # chapter title
+                       lambda: url.split('/')[-2]],
+           'txshuku':[txshuku,
+                      lambda: url.split('/')[-1].split('.')[0], # index in url
+                      lambda: str(soup.find_all('div', {"class":"contentbox"})[0]), # content
+                      lambda: soup.find_all('h1')[0].text[:-4], # main title
+                      lambda: url.split('/')[-2],
+                      lambda: url.split('/')[-2]],
+           'sfacg':[sfacg,
+                    lambda: url.split('/')[-3], # index in url
+                    lambda: str(soup.find_all('div', {'id':'ChapterBody'})[0]), # content
+                    lambda: soup.find_all('h1')[0].text, # main title
+                    lambda: soup.find_all('h2')[0].text,
+                    lambda: soup.find_all('h2')[0].text]}
 
 def get_source_info(url):
-    # 1. check which source does the url comes from, return source in string
-    # 2. find the book index according to the source
-    # 3. parse the index and get the link of each chapter
     source = ''
     index = ''
     if 'kanunu' in url: # kanunu 1 & 2
         if url.split('/')[-1]:
             source = 'kanunu'
-            index = url.split('/')[-1].split('.')[0]
         else:
             source = 'kanunu1'
-            index = url.split('/')[-2]
     elif 'ty2016' in url:
         source = 'ty2016'
-        index = url.split('/')[-2]
     elif 'dushu369' in url:
         source = 'dushu369'
-        index = url.split('/')[-3]
     elif 'txshuku' in url:
         source = 'txshuku'
-        index = url.split('/')[-1].split('.')[0]
     elif 'sfacg' in url:
         source = 'sfacg'
-        index = url.split('/')[-3]
+    index = support[source][1]()
     return source, index
 
 def parse_index(soup, source, index, url):
@@ -121,17 +144,24 @@ def parse_index(soup, source, index, url):
 def get_content(soup, source):
 
     if source in support:
-        content = support[source][1]()
+        content = support[source][2]()
 
-    content = re.sub('<br/>\n<br/>', '</p>\n<p>', content)
+    if source == 'dushu369':
+        #TODO: different way to modify br in dushu 369
+        content = re.sub('<br/>\n<br/>', '</p>\n<p>', content)
+    else:
+        content = re.sub('<br/>\n<br/>', '</p>\n<p>', content)
     return content
 
 
-def get_title(soup, source):
-    if source == 'kanunu' or source == 'kanunu1' or source == '99lib':
-        title = soup.find_all('h2')[0].text
-    elif source == 'ty2016':
-        title = soup.find_all('h1')[0].text
+def get_title_main(soup, source):
+    if source in support:
+        title = support[source][3]()
+    return title
+
+def get_title_chapter(soup, source):
+    if source in support:
+        title = support[source][4]()
     return title
 
 def get_intro(soup, source):
@@ -428,7 +458,7 @@ if __name__ == "__main__":
 
     # Test build epub
     # build_epub(kanunu)
-    url = txc
+    url = sfacg_index
     source, index = get_source_info(url)
 
     res = requests.get(url)
@@ -436,9 +466,12 @@ if __name__ == "__main__":
     page = re.sub('&nbsp;', ' ', res.text)  # for all text in res, change &nbsp to ' '
     soup = BeautifulSoup(page, 'html.parser')
 
-    content = get_content(soup, source)
-    print (content)
-
+    # content = get_content(soup, source)
+    # print (content)
+    title = get_title_main(soup, source)
+    print (title)
+    # title = get_title_main(soup, source)
+    # print(title)
 
 
 
