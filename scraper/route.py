@@ -85,31 +85,31 @@ support = {'kanunu': [kanunu,
                       lambda: url.split('/')[-2], # index in url
                       lambda: str(soup.find_all('p')[0]), # content
                       lambda: soup.find_all('h1')[0].text, # main title
-                      lambda: soup.find_all('h2')[0].text, # chapter title
+                      lambda: soup.find_all('font')[0].text, # chapter title
                       lambda: soup.find_all('h2')[0].text],
            'ty2016':[ty2016,
                      lambda: url.split('/')[-2], # index in url
                      lambda: str(soup.find_all('p')[1]), # content
                      lambda: soup.find_all('h1')[0].text, # main title
-                     lambda: soup.find_all('h2')[0].text, # chapter title
+                     lambda: soup.find_all('h1')[0].text, # chapter title
                      lambda: url.split('/')[-2]],
            'dushu369':[dushu369,
                        lambda: url.split('/')[-3], # index in url
                        lambda: str(soup.find_all("td", {"class": "content"})[0]), # content
                        lambda: soup.find_all('td', {'class':'cntitle'})[0].text.split('《')[1][:-1], # main title
-                       lambda: soup.find_all('h2')[0].text, # chapter title
+                       lambda: soup.find_all('td', {'class':'cntitle'})[0].text, # chapter title
                        lambda: url.split('/')[-2]],
            'txshuku':[txshuku,
                       lambda: url.split('/')[-1].split('.')[0], # index in url
                       lambda: str(soup.find_all('div', {"class":"contentbox"})[0]), # content
                       lambda: soup.find_all('h1')[0].text[:-4], # main title
-                      lambda: url.split('/')[-2],
+                      lambda: soup.find_all('h1')[0].text, # chapter title
                       lambda: url.split('/')[-2]],
            'sfacg':[sfacg,
                     lambda: url.split('/')[-3], # index in url
                     lambda: str(soup.find_all('div', {'id':'ChapterBody'})[0]), # content
                     lambda: soup.find_all('h1')[0].text, # main title
-                    lambda: soup.find_all('h2')[0].text,
+                    lambda: soup.find_all('h1')[0].text, # chapter title
                     lambda: soup.find_all('h2')[0].text]}
 
 def get_source_info(url):
@@ -458,9 +458,8 @@ if __name__ == "__main__":
 
     # Test build epub
     # build_epub(kanunu)
-    url = sfacg_index
+    url = sc
     source, index = get_source_info(url)
-
     res = requests.get(url)
     res.encoding = 'gb2312'
     page = re.sub('&nbsp;', ' ', res.text)  # for all text in res, change &nbsp to ' '
@@ -468,10 +467,10 @@ if __name__ == "__main__":
 
     # content = get_content(soup, source)
     # print (content)
-    title = get_title_main(soup, source)
-    print (title)
     # title = get_title_main(soup, source)
-    # print(title)
+    # print (title)
+    title = get_title_chapter(soup, source)
+    print(title)
 
 
 
