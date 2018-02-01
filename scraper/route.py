@@ -8,6 +8,9 @@ from bs4 import BeautifulSoup
 # TODO: 有时候index本身会有两层目录
 
 # TODO: [重要]  之后用OOP的思想重构，每个网站都作为一个class，有各种性质（content/ title/ intro/ author/ etc.）
+# TODO: 把get title/author/intro等function写成一个
+
+
 
 # Current supported list:
 
@@ -26,6 +29,7 @@ from bs4 import BeautifulSoup
 # sfacg: 1. http://book.sfacg.com/Novel/108421/MainIndex/
 # content: 1. http://book.sfacg.com/Novel/108421/183067/1512447/
 # TODO: sfacg has a very wired layout, the index contains chapter information
+
 
 def kanunu(all_chapter, href, index):
     if source == 'kanunu' and href and index in href:
@@ -80,37 +84,40 @@ support = {'kanunu': [kanunu,
                       lambda: str(soup.find_all('p')[0]), # content
                       lambda: soup.find_all('h2')[0].text, # main title
                       lambda: soup.find_all('h2')[0].text, # chapter title
-                      lambda: soup.find_all('h2')[0].text],
+                      lambda: soup.find_all('td', {'class': 'p10-21'})[0].text, # intro
+                      lambda: soup.find_all('td')[12].find_all('td')[1].text.split(" ")[1].split("：")[2] # author
+                      ],
            'kanunu1':[kanunu1,
                       lambda: url.split('/')[-2], # index in url
                       lambda: str(soup.find_all('p')[0]), # content
                       lambda: soup.find_all('h1')[0].text, # main title
                       lambda: soup.find_all('font')[0].text, # chapter title
-                      lambda: soup.find_all('h2')[0].text],
+                      lambda: soup.find_all('h2')[0].text], # intro
            'ty2016':[ty2016,
                      lambda: url.split('/')[-2], # index in url
                      lambda: str(soup.find_all('p')[1]), # content
                      lambda: soup.find_all('h1')[0].text, # main title
                      lambda: soup.find_all('h1')[0].text, # chapter title
-                     lambda: url.split('/')[-2]],
+                     lambda: soup.find_all('p')[0].text], # intro
            'dushu369':[dushu369,
                        lambda: url.split('/')[-3], # index in url
                        lambda: str(soup.find_all("td", {"class": "content"})[0]), # content
                        lambda: soup.find_all('td', {'class':'cntitle'})[0].text.split('《')[1][:-1], # main title
                        lambda: soup.find_all('td', {'class':'cntitle'})[0].text, # chapter title
-                       lambda: url.split('/')[-2]],
+                       lambda: soup.find_all('td', {'class':'Readme'})[0].text], # intro
            'txshuku':[txshuku,
                       lambda: url.split('/')[-1].split('.')[0], # index in url
                       lambda: str(soup.find_all('div', {"class":"contentbox"})[0]), # content
                       lambda: soup.find_all('h1')[0].text[:-4], # main title
                       lambda: soup.find_all('h1')[0].text, # chapter title
-                      lambda: url.split('/')[-2]],
+                      lambda: soup.find_all('p')[1].text], # intro
            'sfacg':[sfacg,
                     lambda: url.split('/')[-3], # index in url
                     lambda: str(soup.find_all('div', {'id':'ChapterBody'})[0]), # content
                     lambda: soup.find_all('h1')[0].text, # main title
                     lambda: soup.find_all('h1')[0].text, # chapter title
-                    lambda: soup.find_all('h2')[0].text]}
+                    lambda: soup.body.find_all('p')] # intro
+           }
 
 def get_source_info(url):
     source = ''
@@ -156,29 +163,26 @@ def get_content(soup, source):
 
 def get_title_main(soup, source):
     if source in support:
-        title = support[source][3]()
-    return title
+        return support[source][3]()
 
 def get_title_chapter(soup, source):
     if source in support:
-        title = support[source][4]()
-    return title
+        return support[source][4]()
 
-def get_intro(soup, source):
-    if source == 'kanunu':
-        #/html/body/div[1]/table[9]/tbody/tr/td[2]/table[4]/tbody/tr/td/table[1]/tbody/tr/td[2]/text()
-        intro = soup.find_all('td')[16].find_all('td')[1].text
-    elif source == 'ty2016':
-        # //*[@id="main"]/div[2]/div[2]/p/text()
-        intro = soup.find('div', {'id': 'main'}).find_all('p')[0].text
-    elif source == 'kanunu1':
-        # /html/body/div[1]/table[9]/tbody/tr[4]/td/table[1]/tbody/tr[2]/td/text()
-        intro = soup.find_all('td')[16].text
-    elif source == 'dushu369':
-        pass
-    if intro:
-        return intro
-    return False
+
+def get_intro(soup, source, url):
+    if source != 'sfacg' and source in support:
+        return support[source][5]()
+    elif source == 'sfacg':
+        pos = url.index('MainIndex')
+        url = url[:pos]
+        # modify url,
+        res = requests.get(url)
+        # res.encoding = 'gb2312'
+        page = re.sub('&nbsp;', ' ', res.text)  # for all text in res, change &nbsp to ' '
+        soup = BeautifulSoup(page, 'html.parser')
+        print (soup)
+        return support[source][5]()
 
 
 def get_author(soup, source):
@@ -458,7 +462,7 @@ if __name__ == "__main__":
 
     # Test build epub
     # build_epub(kanunu)
-    url = sc
+    url = sfacg_index
     source, index = get_source_info(url)
     res = requests.get(url)
     res.encoding = 'gb2312'
@@ -469,9 +473,9 @@ if __name__ == "__main__":
     # print (content)
     # title = get_title_main(soup, source)
     # print (title)
-    title = get_title_chapter(soup, source)
-    print(title)
-
+    # title = get_title_chapter(soup, source)
+    # print(title)
+    print(get_intro(soup, source, url))
 
 
 
