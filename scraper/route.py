@@ -92,31 +92,42 @@ support = {'kanunu': [kanunu,
                       lambda: str(soup.find_all('p')[0]), # content
                       lambda: soup.find_all('h1')[0].text, # main title
                       lambda: soup.find_all('font')[0].text, # chapter title
-                      lambda: soup.find_all('h2')[0].text], # intro
+                      lambda: soup.find_all('h2')[0].text, # intro
+                      lambda: soup.find_all('td')[12].text.split("：")[1].split(" ")[0]  #author
+                      ],
            'ty2016':[ty2016,
                      lambda: url.split('/')[-2], # index in url
                      lambda: str(soup.find_all('p')[1]), # content
                      lambda: soup.find_all('h1')[0].text, # main title
                      lambda: soup.find_all('h1')[0].text, # chapter title
-                     lambda: soup.find_all('p')[0].text], # intro
+                     lambda: soup.find_all('p')[0].text, # intro
+                     lambda: soup.find_all('h2')[1].a.text#author
+                     ],
            'dushu369':[dushu369,
                        lambda: url.split('/')[-3], # index in url
                        lambda: str(soup.find_all("td", {"class": "content"})[0]), # content
                        lambda: soup.find_all('td', {'class':'cntitle'})[0].text.split('《')[1][:-1], # main title
                        lambda: soup.find_all('td', {'class':'cntitle'})[0].text, # chapter title
-                       lambda: soup.find_all('td', {'class':'Readme'})[0].text], # intro
+                       lambda: soup.find_all('td', {'class':'Readme'})[0].text, # intro
+                       lambda: soup.find_all('td', {'class':'cntitle'})[0].text.split('《')[0]# author
+                       ],
            'txshuku':[txshuku,
                       lambda: url.split('/')[-1].split('.')[0], # index in url
                       lambda: str(soup.find_all('div', {"class":"contentbox"})[0]), # content
                       lambda: soup.find_all('h1')[0].text[:-4], # main title
                       lambda: soup.find_all('h1')[0].text, # chapter title
-                      lambda: soup.find_all('p')[1].text], # intro
+                      lambda: soup.find_all('p')[1].text, # intro
+                      # //*[@id="content"]/div/div/div[2]/div[2]/div[1]/div[2]/ul/li[1]/p
+                      lambda: soup.find_all('p')[1]# author
+                      ],
            'sfacg':[sfacg,
                     lambda: url.split('/')[-3], # index in url
                     lambda: str(soup.find_all('div', {'id':'ChapterBody'})[0]), # content
                     lambda: soup.find_all('h1')[0].text, # main title
                     lambda: soup.find_all('h1')[0].text, # chapter title
-                    lambda: soup.body.find_all('p')] # intro
+                    lambda: soup.find_all('p', {"class": "summary big-profiles"}),  # TODO: intro <- does not work for now
+                    lambda: soup.find_all('p', {"class": "summary big-profiles"})# author
+                    ]
            }
 
 def get_source_info(url):
@@ -186,32 +197,23 @@ def get_intro(soup, source, url):
 
 
 def get_author(soup, source):
-    if source == 'kanunu':
-        author = soup.find_all('td')[12].find_all('td')[1].text.split(" ")[1].split("：")[2] # Note to use chinese "："
-    elif source == 'kanunu1':
-        author = soup.find_all('td')[12].text.split("：")[1].split(" ")[0]
-    elif source == 'ty2016':
-        author =soup.find_all('h2')[1].a.text
-    elif source == 'dushu369':
-        pass
-    if author:
-        return author
-    return False
+    if source != 'txshuku' and source != 'sfacg' and 'source' in support:
+        return support[source][6]()
 
 
-def write_in_md(url):
-    all_chapters = route(url)
-    file = open("test.md","wb")  # The wb indicates that the file is opened for writing in binary mode.
-    for link in all_chapters:
-        res = requests.get(link)
-        res.encoding = 'gb2312'
-        page = re.sub('&nbsp;', ' ', res.text)  # for all text in res, change &nbsp to ' '
-        soup = BeautifulSoup(page, 'html.parser')
-        title = ('<br/>##' + get_title(soup, get_source(url))).encode('utf-8')
-        content = get_content(soup, get_source(url)).encode('utf-8')
-        file.write(title)
-        file.write(content)
-    file.close()
+# def write_in_md(url):
+#     all_chapters = route(url)
+#     file = open("test.md","wb")  # The wb indicates that the file is opened for writing in binary mode.
+#     for link in all_chapters:
+#         res = requests.get(link)
+#         res.encoding = 'gb2312'
+#         page = re.sub('&nbsp;', ' ', res.text)  # for all text in res, change &nbsp to ' '
+#         soup = BeautifulSoup(page, 'html.parser')
+#         title = ('<br/>##' + get_title(soup, get_source(url))).encode('utf-8')
+#         content = get_content(soup, get_source(url)).encode('utf-8')
+#         file.write(title)
+#         file.write(content)
+#     file.close()
 
 
 def get_epub_content(url, folder):
@@ -462,7 +464,7 @@ if __name__ == "__main__":
 
     # Test build epub
     # build_epub(kanunu)
-    url = sfacg_index
+    url = dushu369_index
     source, index = get_source_info(url)
     res = requests.get(url)
     res.encoding = 'gb2312'
@@ -475,8 +477,8 @@ if __name__ == "__main__":
     # print (title)
     # title = get_title_chapter(soup, source)
     # print(title)
-    print(get_intro(soup, source, url))
-
+    # print(get_intro(soup, source, url))
+    print (get_author(soup, source))
 
 
 
