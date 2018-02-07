@@ -118,7 +118,7 @@ support = {'kanunu': [kanunu,
                       lambda: soup.find_all('h1')[0].text, # chapter title
                       lambda: soup.find_all('p')[1].text, # intro
                       # //*[@id="content"]/div/div/div[2]/div[2]/div[1]/div[2]/ul/li[1]/p
-                      lambda: soup.find_all('p')[1]# author
+                      lambda: soup.find_all('p')[1].text# author
                       ],
            'sfacg':[sfacg,
                     lambda: url.split('/')[-3], # index in url
@@ -196,10 +196,19 @@ def get_intro(soup, source, url):
         return support[source][5]()
 
 
-def get_author(soup, source):
-    if source != 'txshuku' and source != 'sfacg' and 'source' in support:
+def get_author(soup, source, url):
+    if source != 'txshuku' and source != 'sfacg' and source in support:
+        return support[source][6]()
+    elif source == 'txshuku':
+        indexurl = url.replace('dir','article')
+        res = requests.get(indexurl)
+        res.encoding = 'gb2312'
+        page = re.sub('&nbsp;', ' ', res.text)  # for all text in res, change &nbsp to ' '
+        soup = BeautifulSoup(page, 'html.parser')
         return support[source][6]()
 
+    elif source == 'sfacg':
+        pass
 
 # def write_in_md(url):
 #     all_chapters = route(url)
@@ -464,7 +473,7 @@ if __name__ == "__main__":
 
     # Test build epub
     # build_epub(kanunu)
-    url = dushu369_index
+    url = txshuku_index
     source, index = get_source_info(url)
     res = requests.get(url)
     res.encoding = 'gb2312'
@@ -478,7 +487,7 @@ if __name__ == "__main__":
     # title = get_title_chapter(soup, source)
     # print(title)
     # print(get_intro(soup, source, url))
-    print (get_author(soup, source))
+    print (get_author(soup, source, url))
 
 
 
