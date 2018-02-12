@@ -85,7 +85,9 @@ support = {'kanunu': [kanunu,
                       lambda: soup.find_all('h2')[0].text, # main title
                       lambda: soup.find_all('h2')[0].text, # chapter title
                       lambda: soup.find_all('td', {'class': 'p10-21'})[0].text, # intro
-                      lambda: soup.find_all('td')[12].find_all('td')[1].text.split(" ")[1].split("：")[2] # author
+                      lambda: soup.find_all('td')[12].find_all('td')[1].text.split(" ")[1].split("：")[2], # author
+                      "努努书坊",
+                      "https://www.kanunu8.com/"
                       ],
            'kanunu1':[kanunu1,
                       lambda: url.split('/')[-2], # index in url
@@ -93,7 +95,9 @@ support = {'kanunu': [kanunu,
                       lambda: soup.find_all('h1')[0].text, # main title
                       lambda: soup.find_all('font')[0].text, # chapter title
                       lambda: soup.find_all('h2')[0].text, # intro
-                      lambda: soup.find_all('td')[12].text.split("：")[1].split(" ")[0]  #author
+                      lambda: soup.find_all('td')[12].text.split("：")[1].split(" ")[0],  #author
+                      "努努书坊",
+                      "https://www.kanunu8.com/"
                       ],
            'ty2016':[ty2016,
                      lambda: url.split('/')[-2], # index in url
@@ -101,7 +105,9 @@ support = {'kanunu': [kanunu,
                      lambda: soup.find_all('h1')[0].text, # main title
                      lambda: soup.find_all('h1')[0].text, # chapter title
                      lambda: soup.find_all('p')[0].text, # intro
-                     lambda: soup.find_all('h2')[1].a.text#author
+                     lambda: soup.find_all('h2')[1].a.text, #author
+                     "天涯书库",
+                     "http://www.ty2016.net/"
                      ],
            'dushu369':[dushu369,
                        lambda: url.split('/')[-3], # index in url
@@ -109,7 +115,9 @@ support = {'kanunu': [kanunu,
                        lambda: soup.find_all('td', {'class':'cntitle'})[0].text.split('《')[1][:-1], # main title
                        lambda: soup.find_all('td', {'class':'cntitle'})[0].text, # chapter title
                        lambda: soup.find_all('td', {'class':'Readme'})[0].text, # intro
-                       lambda: soup.find_all('td', {'class':'cntitle'})[0].text.split('《')[0]# author
+                       lambda: soup.find_all('td', {'class':'cntitle'})[0].text.split('《')[0], # author
+                       "读书369",
+                       "www.dushu369.com"
                        ],
            'txshuku':[txshuku,
                       lambda: url.split('/')[-1].split('.')[0], # index in url
@@ -117,8 +125,9 @@ support = {'kanunu': [kanunu,
                       lambda: soup.find_all('h1')[0].text[:-4], # main title
                       lambda: soup.find_all('h1')[0].text, # chapter title
                       lambda: soup.find_all('p')[1].text, # intro
-                      # //*[@id="content"]/div/div/div[2]/div[2]/div[1]/div[2]/ul/li[1]/p
-                      lambda: soup.find_all('p')[1].text# author
+                      lambda: soup.find_all('p')[1].text, # author
+                      "天下书库",
+                      "http://www.txshuku.net/"
                       ],
            'sfacg':[sfacg,
                     lambda: url.split('/')[-3], # index in url
@@ -126,11 +135,13 @@ support = {'kanunu': [kanunu,
                     lambda: soup.find_all('h1')[0].text, # main title
                     lambda: soup.find_all('h1')[0].text, # chapter title
                     lambda: soup.find_all('p', {"class": "summary big-profiles"}),  # TODO: intro <- does not work for now
-                    lambda: soup.find_all('p', {"class": "summary big-profiles"})# author
+                    lambda: soup.find_all('p', {"class": "summary big-profiles"}), # author
+                    "SFACG",
+                    "http://www.sfacg.com/"
                     ]
            }
 
-def get_source_info(url):
+def get_source(url):
     source = ''
     index = ''
     if 'kanunu' in url: # kanunu 1 & 2
@@ -146,10 +157,10 @@ def get_source_info(url):
         source = 'txshuku'
     elif 'sfacg' in url:
         source = 'sfacg'
-    index = support[source][1]()
-    return source, index
+    return source
 
-def parse_index(soup, source, index, url):
+def parse_index(soup, source):
+    index = support[source][1]()
     all_chapter = []
     for link in soup.find_all('a'):
         href = link.get('href')
@@ -210,23 +221,11 @@ def get_author(soup, source, url):
     elif source == 'sfacg':
         pass
 
-# def write_in_md(url):
-#     all_chapters = route(url)
-#     file = open("test.md","wb")  # The wb indicates that the file is opened for writing in binary mode.
-#     for link in all_chapters:
-#         res = requests.get(link)
-#         res.encoding = 'gb2312'
-#         page = re.sub('&nbsp;', ' ', res.text)  # for all text in res, change &nbsp to ' '
-#         soup = BeautifulSoup(page, 'html.parser')
-#         title = ('<br/>##' + get_title(soup, get_source(url))).encode('utf-8')
-#         content = get_content(soup, get_source(url)).encode('utf-8')
-#         file.write(title)
-#         file.write(content)
-#     file.close()
 
+# loop through all chapter's link, extract the content
+def get_epub_content(soup, folder):
 
-def get_epub_content(url, folder):
-    all_chapters = route(url)
+    all_chapters = parse_index(soup, source)
     counter = 1
     header0 = "<?xml version='1.0' encoding='utf-8' standalone='no'?>\n<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.1//EN'" \
              " 'http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd'>\n<html xmlns='http://www.w3.org/1999/xhtml'" \
@@ -244,7 +243,7 @@ def get_epub_content(url, folder):
         res.encoding = 'gb2312'
         page = re.sub('&nbsp;', ' ', res.text)  # for all text in res, change &nbsp to ' '
         soup = BeautifulSoup(page, 'html.parser')
-        title = (get_title(soup, get_source(url)))
+        title = (get_title_chapter(soup, get_source(url)))
         title_dict[counter] = title
         content = get_content(soup, get_source(url))
         file_name = 'chapter_' + str(counter) + '.xhtml'
@@ -403,7 +402,7 @@ def build_epub(url):
     res.encoding = 'gb2312'
     page = re.sub('&nbsp;', ' ', res.text)  # for all text in res, change &nbsp to ' '
     soup = BeautifulSoup(page, 'html.parser')
-    title = get_title(soup, get_source(url))
+    title = get_title_main(soup, get_source(url))
     author = get_author(soup, get_source(url))
     intro = get_intro(soup, get_source(url))
 
@@ -427,17 +426,8 @@ def build_epub(url):
 
     # create content.opf
     source = get_source(url)
-    source_site = ""
-    source_url = ""
-    if 'kanunu' in source:
-        source_site = '努努书坊'
-        source_url = '[https://www.kanunu8.com/]'
-    elif 'ty2016' in source:
-        source_site = '天涯书库'
-        source_url = '[http://www.ty2016.net/]'
-    elif 'dushu369' in source:
-        source_site = '读书369'
-        source_url = '[http://www.dushu369.com/]'
+    source_site = support[source][7]
+    source_url = support[source][8]
     contentopf(chapter_dict, title, author, intro, source_site, source_url, dirname)
 
     # create page.xhtml
@@ -474,7 +464,7 @@ if __name__ == "__main__":
     # Test build epub
     # build_epub(kanunu)
     url = txshuku_index
-    source, index = get_source_info(url)
+    source = get_source(url)
     res = requests.get(url)
     res.encoding = 'gb2312'
     page = re.sub('&nbsp;', ' ', res.text)  # for all text in res, change &nbsp to ' '
