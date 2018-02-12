@@ -5,10 +5,9 @@ from bs4 import BeautifulSoup
 
 # TODO: 由于之后可能会支持的小说网站众多，所以需要重构源头选择部分，以有更好的可拓展性
 # TODO：最好全程只需要输入url一次，之后尽量用soup
-# TODO: 有时候index本身会有两层目录
 
 # TODO: [重要]  之后用OOP的思想重构，每个网站都作为一个class，有各种性质（content/ title/ intro/ author/ etc.）
-# TODO: 把get title/author/intro等function写成一个
+
 
 
 
@@ -28,7 +27,8 @@ from bs4 import BeautifulSoup
 
 # sfacg: 1. http://book.sfacg.com/Novel/108421/MainIndex/
 # content: 1. http://book.sfacg.com/Novel/108421/183067/1512447/
-# TODO: sfacg has a very wired layout, the index contains chapter information
+# TODO: [重要]  research how to extract js modified dom
+# TODO: [重要]  把get title/author/intro等function写成一个
 
 
 def kanunu(all_chapter, href, index):
