@@ -80,62 +80,62 @@ def sfacg(all_chapter, href, index):
 # Support provides all info about different supported site, the orders are:
 # site name (correspond to different method to extract chapter link)/ index/ content/ title/ author/ intro
 support = {'kanunu': [kanunu,
-                      lambda: url.split('/')[-1].split('.')[0], # index in url
-                      lambda: str(soup.find_all('p')[0]), # content
-                      lambda: soup.find_all('h2')[0].text, # main title
-                      lambda: soup.find_all('h2')[0].text, # chapter title
-                      lambda: soup.find_all('td', {'class': 'p10-21'})[0].text, # intro
-                      lambda: soup.find_all('td')[12].find_all('td')[1].text.split(" ")[1].split("：")[2], # author
+                      lambda url : url.split('/')[-1].split('.')[0], # index in url
+                      lambda soup: str(soup.find_all('p')[0]), # content
+                      lambda soup: soup.find_all('h2')[0].text, # main title
+                      lambda soup: soup.find_all('h2')[0].text, # chapter title
+                      lambda soup: soup.find_all('td', {'class': 'p10-21'})[0].text, # intro
+                      lambda soup: soup.find_all('td')[12].find_all('td')[1].text.split(" ")[1].split("：")[2], # author
                       "努努书坊",
                       "https://www.kanunu8.com/"
                       ],
            'kanunu1':[kanunu1,
-                      lambda: url.split('/')[-2], # index in url
-                      lambda: str(soup.find_all('p')[0]), # content
-                      lambda: soup.find_all('h1')[0].text, # main title
-                      lambda: soup.find_all('font')[0].text, # chapter title
-                      lambda: soup.find_all('h2')[0].text, # intro
-                      lambda: soup.find_all('td')[12].text.split("：")[1].split(" ")[0],  #author
+                      lambda url : url.split('/')[-2], # index in url
+                      lambda soup: str(soup.find_all('p')[0]), # content
+                      lambda soup: soup.find_all('h1')[0].text, # main title
+                      lambda soup: soup.find_all('font')[0].text, # chapter title
+                      lambda soup: soup.find_all('h2')[0].text, # intro
+                      lambda soup: soup.find_all('td')[12].text.split("：")[1].split(" ")[0],  #author
                       "努努书坊",
                       "https://www.kanunu8.com/"
                       ],
            'ty2016':[ty2016,
-                     lambda: url.split('/')[-2], # index in url
-                     lambda: str(soup.find_all('p')[1]), # content
-                     lambda: soup.find_all('h1')[0].text, # main title
-                     lambda: soup.find_all('h1')[0].text, # chapter title
-                     lambda: soup.find_all('p')[0].text, # intro
-                     lambda: soup.find_all('h2')[1].a.text, #author
+                     lambda url : url.split('/')[-2], # index in url
+                     lambda soup: str(soup.find_all('p')[1]), # content
+                     lambda soup: soup.find_all('h1')[0].text, # main title
+                     lambda soup: soup.find_all('h1')[0].text, # chapter title
+                     lambda soup: soup.find_all('p')[0].text, # intro
+                     lambda soup: soup.find_all('h2')[1].a.text, #author
                      "天涯书库",
                      "http://www.ty2016.net/"
                      ],
            'dushu369':[dushu369,
-                       lambda: url.split('/')[-3], # index in url
-                       lambda: str(soup.find_all("td", {"class": "content"})[0]), # content
-                       lambda: soup.find_all('td', {'class':'cntitle'})[0].text.split('《')[1][:-1], # main title
-                       lambda: soup.find_all('td', {'class':'cntitle'})[0].text, # chapter title
-                       lambda: soup.find_all('td', {'class':'Readme'})[0].text, # intro
-                       lambda: soup.find_all('td', {'class':'cntitle'})[0].text.split('《')[0], # author
+                       lambda url : url.split('/')[-3], # index in url
+                       lambda soup: str(soup.find_all("td", {"class": "content"})[0]), # content
+                       lambda soup: soup.find_all('td', {'class':'cntitle'})[0].text.split('《')[1][:-1], # main title
+                       lambda soup: soup.find_all('td', {'class':'cntitle'})[0].text, # chapter title
+                       lambda soup: soup.find_all('td', {'class':'Readme'})[0].text, # intro
+                       lambda soup: soup.find_all('td', {'class':'cntitle'})[0].text.split('《')[0], # author
                        "读书369",
                        "www.dushu369.com"
                        ],
            'txshuku':[txshuku,
-                      lambda: url.split('/')[-1].split('.')[0], # index in url
-                      lambda: str(soup.find_all('div', {"class":"contentbox"})[0]), # content
-                      lambda: soup.find_all('h1')[0].text[:-4], # main title
-                      lambda: soup.find_all('h1')[0].text, # chapter title
-                      lambda: soup.find_all('p')[1].text, # intro
-                      lambda: soup.find_all('p')[1].text, # author
+                      lambda url : url.split('/')[-1].split('.')[0], # index in url
+                      lambda soup: str(soup.find_all('div', {"class":"contentbox"})[0]), # content
+                      lambda soup: soup.find_all('h1')[0].text[:-4], # main title
+                      lambda soup: soup.find_all('h1')[0].text, # chapter title
+                      lambda soup: soup.find_all('p')[1].text, # intro
+                      lambda soup: soup.find_all('p')[1].text, # author
                       "天下书库",
                       "http://www.txshuku.net/"
                       ],
            'sfacg':[sfacg,
-                    lambda: url.split('/')[-3], # index in url
-                    lambda: str(soup.find_all('div', {'id':'ChapterBody'})[0]), # content
-                    lambda: soup.find_all('h1')[0].text, # main title
-                    lambda: soup.find_all('h1')[0].text, # chapter title
-                    lambda: soup.find_all('p', {"class": "summary big-profiles"}),  # TODO: intro <- does not work for now
-                    lambda: soup.find_all('p', {"class": "summary big-profiles"}), # author
+                    lambda url: url.split('/')[-3], # index in url
+                    lambda soup: str(soup.find_all('div', {'id':'ChapterBody'})[0]), # content
+                    lambda soup: soup.find_all('h1')[0].text, # main title
+                    lambda soup: soup.find_all('h1')[0].text, # chapter title
+                    lambda soup: soup.find_all('p', {"class": "summary big-profiles"}),  # TODO: intro <- does not work for now
+                    lambda soup: soup.find_all('p', {"class": "summary big-profiles"}), # author
                     "SFACG",
                     "http://www.sfacg.com/"
                     ]
@@ -159,8 +159,8 @@ def get_source(url):
         source = 'sfacg'
     return source
 
-def parse_index(soup, source):
-    index = support[source][1]()
+def parse_index(soup, source, url):
+    index = support[source][1](url)
     all_chapter = []
     for link in soup.find_all('a'):
         href = link.get('href')
@@ -185,16 +185,16 @@ def get_content(soup, source):
 
 def get_title_main(soup, source):
     if source in support:
-        return support[source][3]()
+        return support[source][3](soup)
 
 def get_title_chapter(soup, source):
     if source in support:
-        return support[source][4]()
+        return support[source][4](soup)
 
 
 def get_intro(soup, source, url):
     if source != 'sfacg' and source in support:
-        return support[source][5]()
+        return support[source][5](soup)
     elif source == 'sfacg':
         pos = url.index('MainIndex')
         url = url[:pos]
@@ -204,28 +204,28 @@ def get_intro(soup, source, url):
         page = re.sub('&nbsp;', ' ', res.text)  # for all text in res, change &nbsp to ' '
         soup = BeautifulSoup(page, 'html.parser')
         print (soup)
-        return support[source][5]()
+        return support[source][5](soup)
 
 
 def get_author(soup, source, url):
     if source != 'txshuku' and source != 'sfacg' and source in support:
-        return support[source][6]()
+        return support[source][6](soup)
     elif source == 'txshuku':
         indexurl = url.replace('dir','article')
         res = requests.get(indexurl)
         res.encoding = 'gb2312'
         page = re.sub('&nbsp;', ' ', res.text)  # for all text in res, change &nbsp to ' '
         soup = BeautifulSoup(page, 'html.parser')
-        return support[source][6]()
+        return support[source][6](soup)
 
     elif source == 'sfacg':
         pass
 
 
 # loop through all chapter's link, extract the content
-def get_epub_content(soup, folder):
+def get_epub_content(soup, folder, source, url):
 
-    all_chapters = parse_index(soup, source)
+    all_chapters = parse_index(soup, source, url)
     counter = 1
     header0 = "<?xml version='1.0' encoding='utf-8' standalone='no'?>\n<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.1//EN'" \
              " 'http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd'>\n<html xmlns='http://www.w3.org/1999/xhtml'" \
@@ -402,16 +402,19 @@ def build_epub(url):
     res.encoding = 'gb2312'
     page = re.sub('&nbsp;', ' ', res.text)  # for all text in res, change &nbsp to ' '
     soup = BeautifulSoup(page, 'html.parser')
-    title = get_title_main(soup, get_source(url))
-    author = get_author(soup, get_source(url))
-    intro = get_intro(soup, get_source(url))
+    source = get_source(url)
+    title = get_title_main(soup, source)
+
+
+    author = get_author(soup, source, url)
+    intro = get_intro(soup, get_source(url), url)
 
     # create directory
     dirname = title
     os.makedirs(title, exist_ok= True)
 
     # write content in the directory
-    chapter_dict = get_epub_content(url, dirname)
+    chapter_dict = get_epub_content(url, dirname, source)  # soup, folder, source, url
 
     # create meta_inf
     # TODO: a better way might be have a META-INF folder ready and copy it to other epub folders since META-INF never changes
@@ -462,13 +465,13 @@ if __name__ == "__main__":
     sc = 'http://book.sfacg.com/Novel/108421/183067/1512447/'
 
     # Test build epub
-    # build_epub(kanunu)
-    url = txshuku_index
-    source = get_source(url)
-    res = requests.get(url)
-    res.encoding = 'gb2312'
-    page = re.sub('&nbsp;', ' ', res.text)  # for all text in res, change &nbsp to ' '
-    soup = BeautifulSoup(page, 'html.parser')
+    build_epub(kanunu_index)
+    # url = txshuku_index
+    # source = get_source(url)
+    # res = requests.get(url)
+    # res.encoding = 'gb2312'
+    # page = re.sub('&nbsp;', ' ', res.text)  # for all text in res, change &nbsp to ' '
+    # soup = BeautifulSoup(page, 'html.parser')
 
     # content = get_content(soup, source)
     # print (content)
@@ -477,7 +480,7 @@ if __name__ == "__main__":
     # title = get_title_chapter(soup, source)
     # print(title)
     # print(get_intro(soup, source, url))
-    print (get_author(soup, source, url))
+    # print (get_author(soup, source, url))
 
 
 
