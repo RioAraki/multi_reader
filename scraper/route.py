@@ -31,7 +31,7 @@ from bs4 import BeautifulSoup
 # TODO: [重要]  把get title/author/intro等function写成一个
 
 
-def kanunu(all_chapter, href, index):
+def kanunu(all_chapter, href, index, source, url):
     if source == 'kanunu' and href and index in href:
         pos = url.index(index)
         abs_link = url[:pos] + href
@@ -39,7 +39,7 @@ def kanunu(all_chapter, href, index):
             all_chapter.append(abs_link)
 
 
-def kanunu1(all_chapter, href, index):
+def kanunu1(all_chapter, href, index, source, url):
     if source == 'kanunu1' and href and '/' not in href:
         abs_link = url + href
         if abs_link not in all_chapter:
@@ -47,14 +47,14 @@ def kanunu1(all_chapter, href, index):
 
 
 
-def ty2016(all_chapter, href, index):
+def ty2016(all_chapter, href, index, source, url):
     if source == 'ty2016' and href and '/' not in href and '.html' in href:
         abs_link = url + href
         if abs_link not in all_chapter:
             all_chapter.append(abs_link)
 
 
-def dushu369(all_chapter, href, index):
+def dushu369(all_chapter, href, index, source, url):
     if source == 'dushu369' and href and index in href and any(char.isdigit() for char in href):
         pos = url.index(index) - 1
         abs_link = url[:pos] + href
@@ -62,14 +62,14 @@ def dushu369(all_chapter, href, index):
             all_chapter.append(abs_link)
 
 
-def txshuku(all_chapter, href, index):
+def txshuku(all_chapter, href, index, source, url):
     if source == 'txshuku' and href and 'chapter' in href:
         abs_link = href
         if abs_link not in all_chapter:
             all_chapter.append(abs_link)
 
 
-def sfacg(all_chapter, href, index):
+def sfacg(all_chapter, href, index, source, url):
     if source == 'sfacg' and 'Novel' in href and index in href and href.split('/')[-3] != 'Novel':
         url_pos = url.index(index)
         href_pos = href.index(index)
@@ -94,7 +94,7 @@ support = {'kanunu': [kanunu,
                       lambda soup: str(soup.find_all('p')[0]), # content
                       lambda soup: soup.find_all('h1')[0].text, # main title
                       lambda soup: soup.find_all('font')[0].text, # chapter title
-                      lambda soup: soup.find_all('h2')[0].text, # intro
+                      lambda soup: soup.find_all('td', {'class': 'p10-24'})[0].text, # intro
                       lambda soup: soup.find_all('td')[12].text.split("：")[1].split(" ")[0],  #author
                       "努努书坊",
                       "https://www.kanunu8.com/"
@@ -165,7 +165,7 @@ def parse_index(soup, source, url):
     for link in soup.find_all('a'):
         href = link.get('href')
         if source in support:
-            support[source](all_chapter, href, index)
+            support[source][0](all_chapter, href, index, source, url)
     return all_chapter
 
 # change it the same way as parse index
@@ -173,7 +173,7 @@ def parse_index(soup, source, url):
 def get_content(soup, source):
 
     if source in support:
-        content = support[source][2]()
+        content = support[source][2](soup)
 
     if source == 'dushu369':
         #TODO: different way to modify br in dushu 369
@@ -414,7 +414,7 @@ def build_epub(url):
     os.makedirs(title, exist_ok= True)
 
     # write content in the directory
-    chapter_dict = get_epub_content(url, dirname, source)  # soup, folder, source, url
+    chapter_dict = get_epub_content(soup, dirname, source, url)  # soup, folder, source, url
 
     # create meta_inf
     # TODO: a better way might be have a META-INF folder ready and copy it to other epub folders since META-INF never changes
@@ -465,7 +465,7 @@ if __name__ == "__main__":
     sc = 'http://book.sfacg.com/Novel/108421/183067/1512447/'
 
     # Test build epub
-    build_epub(kanunu_index)
+    build_epub(kanunu1_index)
     # url = txshuku_index
     # source = get_source(url)
     # res = requests.get(url)
