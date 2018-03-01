@@ -7,9 +7,11 @@ from bs4 import BeautifulSoup
 # TODO：最好全程只需要输入url一次，之后尽量用soup
 
 # TODO: [重要]  之后用OOP的思想重构，每个网站都作为一个class，有各种性质（content/ title/ intro/ author/ etc.）
+# TODO: 添加 log 系统，让用户知道进度
+# TODO: 如果无法找到对应小说，做 error check 并让用户反馈
 
-
-
+# TODO：以kanunu 沙丘 书籍 为例，其目录形式分成卷 和 章，普通的抽取目录名形式对其不管用，要新的抽取目录的方法
+# TODO: 把所有 string 放到专门的string file
 
 # Current supported list:
 
@@ -41,7 +43,10 @@ def kanunu(all_chapter, href, index, source, url):
 
 def kanunu1(all_chapter, href, index, source, url):
     if source == 'kanunu1' and href and '/' not in href:
-        abs_link = url + href
+        if "index.html" in url:
+            abs_link = url[:-10]+href
+        else:
+            abs_link = url + href
         if abs_link not in all_chapter:
             all_chapter.append(abs_link)
 
@@ -145,7 +150,7 @@ def get_source(url):
     source = ''
     index = ''
     if 'kanunu' in url: # kanunu 1 & 2
-        if url.split('/')[-1]:
+        if url.split('/')[-1] and url.split('/')[-1] != "index.html":
             source = 'kanunu'
         else:
             source = 'kanunu1'
@@ -203,7 +208,6 @@ def get_intro(soup, source, url):
         # res.encoding = 'gb2312'
         page = re.sub('&nbsp;', ' ', res.text)  # for all text in res, change &nbsp to ' '
         soup = BeautifulSoup(page, 'html.parser')
-        print (soup)
         return support[source][5](soup)
 
 
@@ -452,6 +456,8 @@ if __name__ == "__main__":
     kc = 'https://www.kanunu8.com/files/yqxs/201103/1863/43617.html'
     kc1 = 'https://www.kanunu8.com/book/4333/51335.html'
 
+    shaqiu_index = "https://www.kanunu8.com/book3/6425/index.html"
+
     ty2016_index = 'http://www.ty2016.net/book/Murakami_13/'
     tc = 'http://www.ty2016.net/book/Murakami_13/67710.html'
 
@@ -465,7 +471,7 @@ if __name__ == "__main__":
     sc = 'http://book.sfacg.com/Novel/108421/183067/1512447/'
 
     # Test build epub
-    build_epub(kanunu1_index)
+    build_epub(shaqiu_index)
     # url = txshuku_index
     # source = get_source(url)
     # res = requests.get(url)
