@@ -12,6 +12,8 @@ from bs4 import BeautifulSoup
 
 # TODO：以kanunu 沙丘 书籍 为例，其目录形式分成卷 和 章，普通的抽取目录名形式对其不管用，要新的抽取目录的方法
 # TODO: 把所有 string 放到专门的string file
+# TODO: 在epub做好后删除文件夹
+# TODO：提高目录页的美观程度
 
 # Current supported list:
 
@@ -99,7 +101,7 @@ support = {'kanunu': [kanunu,
                       lambda soup: str(soup.find_all('p')[0]), # content
                       lambda soup: soup.find_all('h1')[0].text, # main title
                       lambda soup: soup.find_all('font')[0].text, # chapter title
-                      lambda soup: soup.find_all('td', {'class': 'p10-24'})[0].text, # intro
+                      lambda soup: soup.find_all('td', {'class': 'p10-24'})[1].text, # intro
                       lambda soup: soup.find_all('td')[12].text.split("：")[1].split(" ")[0],  #author
                       "努努书坊",
                       "https://www.kanunu8.com/"
@@ -471,7 +473,7 @@ if __name__ == "__main__":
     sc = 'http://book.sfacg.com/Novel/108421/183067/1512447/'
 
     # Test build epub
-    build_epub(shaqiu_index)
+    build_epub(kanunu1_index)
     # url = txshuku_index
     # source = get_source(url)
     # res = requests.get(url)
