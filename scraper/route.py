@@ -1,6 +1,7 @@
 import requests
 import re
 import os
+import string_lib as st
 from bs4 import BeautifulSoup
 
 
@@ -213,20 +214,11 @@ def get_epub_content(soup, folder, source, url):
 
     all_chapters = parse_index(soup, source, url)
     counter = 1
-    header0 = "<?xml version='1.0' encoding='utf-8' standalone='no'?>\n<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.1//EN'" \
-             " 'http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd'>\n<html xmlns='http://www.w3.org/1999/xhtml'" \
-             " xml:lang='zh-CN'>\n<head>\n<title>"
-    header1 = "</title>\n<link href='stylesheet.css' type='text/css' rel='stylesheet'/>\n" \
-              "<style type='text/css'>@page { margin-bottom: 5.000000pt; margin-top: 5.000000pt; }</style>\n" \
-              "</head>\n" \
-              "<body>\n"
-    h20 = "<h2>\n<span style='border-bottom:1px solid'>"
-    h21 = "</span>\n</h2>\n<p>"
-    tail = "</p>\n<div class='mbppagebreak'></div></body></html>"
+    h0, h1, h20, h21,tail = st.content_header_0, st.content_header_1, st.h20, st.h21, st.tail
     title_dict = {}
     for link in all_chapters:
         res = requests.get(link)
-        if url != "SFACG":
+        if source != "sfacg":
             res.encoding = 'gb2312'
         page = re.sub('&nbsp;', ' ', res.text)  # for all text in res, change &nbsp to ' '
         soup = BeautifulSoup(page, 'html.parser')
@@ -234,7 +226,7 @@ def get_epub_content(soup, folder, source, url):
         title_dict[counter] = title
         content = get_content(soup, get_source(url))
         file_name = 'chapter_' + str(counter) + '.xhtml'
-        epub_content = header0 + title + header1 + h20 + title + h21 + content + tail
+        epub_content = h0 + title + h1 + h20 + title + h21 + content + tail
         file = open(folder+'/'+file_name, "wb")
         file.write(epub_content.encode('utf-8'))
         counter += 1
@@ -243,9 +235,7 @@ def get_epub_content(soup, folder, source, url):
 
 def META_INF(dirname):
     meta_inf_dir = dirname + '/META-INF'
-    meta_inf_content = "<?xml version='1.0'?>\n<container version='1.0' xmlns='urn:oasis:names:tc:opendocument:xmlns:" \
-                       "container'>\n<rootfiles>\n<rootfile full-path='content.opf' media-type='application/oe" \
-                       "bps-package+xml'/>\n</rootfiles>\n</container>"
+    meta_inf_content = st.meta_inf_content
     os.makedirs(meta_inf_dir, exist_ok=True)
     containxml_path = meta_inf_dir + '/container.xml'
     with open(containxml_path, "w") as f:
@@ -254,23 +244,12 @@ def META_INF(dirname):
 
 
 def catalogxhtml(chapter_dict, title, dirname):
-    head1 = "<?xml version='1.0' encoding='utf-8' standalone='no'?>\n<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.1//EN" \
-            "' 'http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd'>\n<html xmlns='http://www.w3.org/1999/xhtml' xml:lang='" \
-            "zh-CN'>\n<head>\n<title>"
-    head2 = "</title>\n<link href='stylesheet.css' type='text/css' rel='stylesheet'/><style type='text/css'>\n@page " \
-            "{ margin-bottom: 5.000000pt; margin-top: 5.000000pt; }</style>\n</head>\n<body>\n<h1>目录<br/>Content</h1>\n<ul>"
-    tail = "</ul>\n<div class='mbppagebreak'></div>\n</body>\n</html>"
-
-    list1 = "<li class='catalog'><a href='chapter_"
-    list2 = ".xhtml'>"
-    list3 = "</a></li>\n"
-
+    head1, head2, tail, list1, list2, list3 = st.cat_h1, st.cat_h2, st.cat_tail, st.cat_list1, st.cat_list2, st.cat_list3
     content = head1 + title + head2
 
     for chapter,title in chapter_dict.items():
         lst = list1 + str(chapter) + list2 + title + list3
         content += lst
-
     content += tail
     with open(dirname+'/catalog.xhtml', "wb") as f:
         f.write(content.encode('utf-8'))
@@ -285,9 +264,7 @@ def mimetype(dirname):
 
 
 def contentopf(chapter_dict, title, author, intro, source_site, source_url, dirname):
-    head1 = "<?xml version='1.0' encoding='utf-8'?>\n\n<package xmlns='http://www.idpf.org/2007/opf' " \
-            "xmlns:dc='http://purl.org/dc/elements/1.1/' unique-identifier='bookid' version='2.0'>\n\n " \
-            " <metadata xmlns:dc='http://purl.org/dc/elements/1.1/' xmlns:opf='http://www.idpf.org/2007/opf'>\n"
+    head1, head2 = st.opf_h1, st.opf_h2
     dctitle = "<dc:title>"+title+"</dc:title>\n"
     dccreator = "<dc:creator>"+author+"</dc:creator>\n"
     dcintro = "<dc:description>"+intro+"</dc:description>\n"
@@ -296,28 +273,18 @@ def contentopf(chapter_dict, title, author, intro, source_site, source_url, dirn
     dcpublisher = "<dc:publisher>"+source_url+"</dc:publisher>\n"
     dcsubject = "<dc:subject>"+source_site+"</dc:subject>\n"
     dcidentifier = "<dc:identifier id='bookid'>pymtrdr:000001</dc:identifier>"
-    head2 = "</metadata>\n\n<manifest>"
 
     content = head1 + dctitle + dccreator + dcintro + dclanguage + dccontributor + dcpublisher + dcsubject + dcidentifier + head2
 
-    item1 = "<item href='chapter_"
-    item2 = ".xhtml' id='id"
-    item3 = "' media-type='application/xhtml+xml'/>\n"
-    idref1 = "<itemref idref='id"
-    idref2 = "'/>\n"
-    idref = ""
+    item1, item2, item3 = st.opf_i1, st.opf_i2, st.opf_i3
+    idref1, idref2, idref = st.opf_id1, st.opf_id2, st.opf_id
 
     for chapter, title in chapter_dict.items():
         item = item1 + str(chapter) + item2 + str(chapter) + item3
         content += item
         idref += idref1 + str(chapter) + idref2
 
-    item_other = "<item href='catalog.xhtml' id='catalog' media-type='application/xhtml+xml'/>\n<item href='stylesheet." \
-                 "css' id='css' media-type='text/css'/>\n<item href='page.xhtml' id='page' media-type='application/xhtm" \
-                 "l+xml'/>\n<item href='toc.ncx' media-type='application/x-dtbncx+xml' id='ncx'/>\n</manifest>"
-    spine_head = "<spine toc='ncx'>\n<itemref idref='page'/>\n<itemref idref='catalog'/>\n"
-    tail = "<itemref idref='page'/>\n</spine>\n\n<guide>\n<reference href='catalog.xhtml' type='toc' title='目录'/>" \
-           "\n</guide>\n</package>"
+    item_other, spine_head, tail = st.opf_io, st.opf_sh, st.opf_tail
     content+= item_other + spine_head + idref + tail
 
     with open(dirname+'/content.opf', "wb") as f:
@@ -357,8 +324,6 @@ def stylesheetcss(dirname):
         f.write(content)
         f.close()
 
-
-# TODO: get more ideas on what meta in head portion does
 def tocncx(chapter_dict, title, author, dirname):
     head1 = "<?xml version='1.0' encoding='utf-8'?>\n<ncx xmlns='http://www.daisy.org/z3986/2005/ncx/' version='2005-1'>\n" \
             "<head>\n<meta content='pymtrdr:000001' name='dtb:uid'/>\n<meta content='2' name='dtb:depth'/>\n<meta content='0' name='dtb:totalPageCount'/>\n" \
@@ -387,6 +352,7 @@ def tocncx(chapter_dict, title, author, dirname):
 def build_epub(url):
     source = get_source(url)
     res = requests.get(url)
+    res = requests.get(url)
     if source != "sfacg":  # corner case, sfacg does not require encoding
         res.encoding = 'gb2312'
 
@@ -394,7 +360,6 @@ def build_epub(url):
     soup = BeautifulSoup(page, 'html.parser')
 
     title = get_title_main(soup, source)
-    print (title)
 
     author = get_author(soup, source, url)
     intro = get_intro(soup, get_source(url), url)
@@ -457,14 +422,18 @@ if __name__ == "__main__":
     sc = 'http://book.sfacg.com/Novel/108421/183067/1512447/'
 
     # Test build epub
-    build_epub(sfacg_index)
-    # url = txshuku_index
+
+    build_epub(kanunu_index)
+
+    # Test each function
+
+    # url = sc
     # source = get_source(url)
     # res = requests.get(url)
-    # res.encoding = 'gb2312'
+    # # res.encoding = 'gb2312'
     # page = re.sub('&nbsp;', ' ', res.text)  # for all text in res, change &nbsp to ' '
     # soup = BeautifulSoup(page, 'html.parser')
-
+    #
     # content = get_content(soup, source)
     # print (content)
     # title = get_title_main(soup, source)
