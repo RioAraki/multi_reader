@@ -3,7 +3,13 @@ import re
 import os
 from bs4 import BeautifulSoup
 
+<<<<<<< HEAD
 # TODO: 由于之后可能会支持的小说网站众多，所以需要重构源头选择部分，以有更好的可拓展性  
+=======
+
+
+# TODO: 由于之后可能会支持的小说网站众多，所以需要重构源头选择部分，以有更好的可拓展性
+>>>>>>> 475788f50e3ef2b4f071e911dc48b1a17457f034
 # TODO：最好全程只需要输入url一次，之后尽量用soup
 
 # TODO: IMPORTANT:  之后用OOP的思想重构，每个网站都作为一个class，有各种性质（content/ title/ intro/ author/ etc.）
@@ -11,6 +17,10 @@ from bs4 import BeautifulSoup
 # TODO: 添加 log 系统，让用户知道进度
 # TODO: 如果无法找到对应小说，做 error check 并让用户反馈
 
+<<<<<<< HEAD
+=======
+# TODO：以kanunu 沙丘 书籍 为例，其目录形式分成卷 和 章，普通的抽取目录名形式对其不管用，要新的抽取目录的方法  # Solved
+>>>>>>> 475788f50e3ef2b4f071e911dc48b1a17457f034
 # TODO: 把所有 string 放到专门的string file
 # TODO: 在epub做好后删除文件夹
 # TODO：提高目录页的美观程度
