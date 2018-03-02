@@ -3,32 +3,21 @@ import re
 import os
 from bs4 import BeautifulSoup
 
-<<<<<<< HEAD
-# TODO: 由于之后可能会支持的小说网站众多，所以需要重构源头选择部分，以有更好的可拓展性  
-=======
 
-
-# TODO: 由于之后可能会支持的小说网站众多，所以需要重构源头选择部分，以有更好的可拓展性
->>>>>>> 475788f50e3ef2b4f071e911dc48b1a17457f034
-# TODO：最好全程只需要输入url一次，之后尽量用soup
-
+# TODO: IMPORTANT:  research how to extract js modified dom
+# TODO: IMPORTANT:  把 get title/author/intro 等 function 写成一个
 # TODO: IMPORTANT:  之后用OOP的思想重构，每个网站都作为一个class，有各种性质（content/ title/ intro/ author/ etc.）
+
 
 # TODO: 添加 log 系统，让用户知道进度
 # TODO: 如果无法找到对应小说，做 error check 并让用户反馈
-
-<<<<<<< HEAD
-=======
-# TODO：以kanunu 沙丘 书籍 为例，其目录形式分成卷 和 章，普通的抽取目录名形式对其不管用，要新的抽取目录的方法  # Solved
->>>>>>> 475788f50e3ef2b4f071e911dc48b1a17457f034
 # TODO: 把所有 string 放到专门的string file
 # TODO: 在epub做好后删除文件夹
 # TODO：提高目录页的美观程度
 # TODO: 进一步探索 epub 的格式规范以创造更符合规矩标准的epub文件
 # TODO：思考怎么搞epub的封面图？
 
-# TODO: IMPORTANT:  research how to extract js modified dom
-# TODO: IMPORTANT:  把 get title/author/intro 等 function 写成一个
+
 
 
 def kanunu(all_chapter, href, index, source, url):
@@ -193,20 +182,16 @@ def get_title_chapter(soup, source):
     if source in support:
         return support[source][4](soup)
 
-
 def get_intro(soup, source, url):
     if source != 'sfacg' and source in support:
         return support[source][5](soup)
     elif source == 'sfacg':
-        pos = url.index('MainIndex')
-        url = url[:pos]
-        # modify url,
-        res = requests.get(url)
-        # res.encoding = 'gb2312'
-        page = re.sub('&nbsp;', ' ', res.text)  # for all text in res, change &nbsp to ' '
-        soup = BeautifulSoup(page, 'html.parser')
-        return support[source][5](soup)
-
+        # pos = url.index('MainIndex')
+        # url = url[:pos]
+        # res = requests.get(url)
+        # page = re.sub('&nbsp;', ' ', res.text)  # for all text in res, change &nbsp to ' '
+        # soup = BeautifulSoup(page, 'html.parser')
+        return "SFACG: 尚无法获得作品简介"# support[source][5](soup)
 
 def get_author(soup, source, url):
     if source != 'txshuku' and source != 'sfacg' and source in support:
@@ -218,9 +203,9 @@ def get_author(soup, source, url):
         page = re.sub('&nbsp;', ' ', res.text)  # for all text in res, change &nbsp to ' '
         soup = BeautifulSoup(page, 'html.parser')
         return support[source][6](soup)
-
+    # TODO
     elif source == 'sfacg':
-        pass
+        return "SFACG: 尚无法获得作者信息"
 
 
 # loop through all chapter's link, extract the content
@@ -241,7 +226,8 @@ def get_epub_content(soup, folder, source, url):
     title_dict = {}
     for link in all_chapters:
         res = requests.get(link)
-        res.encoding = 'gb2312'
+        if url != "SFACG":
+            res.encoding = 'gb2312'
         page = re.sub('&nbsp;', ' ', res.text)  # for all text in res, change &nbsp to ' '
         soup = BeautifulSoup(page, 'html.parser')
         title = (get_title_chapter(soup, get_source(url)))
@@ -399,13 +385,16 @@ def tocncx(chapter_dict, title, author, dirname):
 
 
 def build_epub(url):
+    source = get_source(url)
     res = requests.get(url)
-    res.encoding = 'gb2312'
+    if source != "sfacg":  # corner case, sfacg does not require encoding
+        res.encoding = 'gb2312'
+
     page = re.sub('&nbsp;', ' ', res.text)  # for all text in res, change &nbsp to ' '
     soup = BeautifulSoup(page, 'html.parser')
-    source = get_source(url)
-    title = get_title_main(soup, source)
 
+    title = get_title_main(soup, source)
+    print (title)
 
     author = get_author(soup, source, url)
     intro = get_intro(soup, get_source(url), url)
