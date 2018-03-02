@@ -3,36 +3,22 @@ import re
 import os
 from bs4 import BeautifulSoup
 
-# TODO: 由于之后可能会支持的小说网站众多，所以需要重构源头选择部分，以有更好的可拓展性
+# TODO: 由于之后可能会支持的小说网站众多，所以需要重构源头选择部分，以有更好的可拓展性  
 # TODO：最好全程只需要输入url一次，之后尽量用soup
 
-# TODO: [重要]  之后用OOP的思想重构，每个网站都作为一个class，有各种性质（content/ title/ intro/ author/ etc.）
+# TODO: IMPORTANT:  之后用OOP的思想重构，每个网站都作为一个class，有各种性质（content/ title/ intro/ author/ etc.）
+
 # TODO: 添加 log 系统，让用户知道进度
 # TODO: 如果无法找到对应小说，做 error check 并让用户反馈
 
-# TODO：以kanunu 沙丘 书籍 为例，其目录形式分成卷 和 章，普通的抽取目录名形式对其不管用，要新的抽取目录的方法
 # TODO: 把所有 string 放到专门的string file
 # TODO: 在epub做好后删除文件夹
 # TODO：提高目录页的美观程度
+# TODO: 进一步探索 epub 的格式规范以创造更符合规矩标准的epub文件
+# TODO：思考怎么搞epub的封面图？
 
-# Current supported list:
-
-# kanunu8: 1. https://www.kanunu8.com/files/yqxs/201103/1863.html  2. https://www.kanunu8.com/book/4333/
-# content: 1. https://www.kanunu8.com/files/yqxs/201103/1863/43617.html 2. https://www.kanunu8.com/book/4333/51335.html
-
-# ty2016: 1. http://www.ty2016.net/book/Murakami_13/
-# content: 1.http://www.ty2016.net/book/Murakami_13/67710.html
-
-# dushu369: 1. http://www.dushu369.com/waiguomingzhu/bngd/
-# content: 1. http://www.dushu369.com/waiguomingzhu/HTML/63294.html
-
-# txshuku: 1. http://book.txshuku.net/dir/352.html
-# content: 1. http://book.txshuku.net/chapter/352/29636.html
-
-# sfacg: 1. http://book.sfacg.com/Novel/108421/MainIndex/
-# content: 1. http://book.sfacg.com/Novel/108421/183067/1512447/
-# TODO: [重要]  research how to extract js modified dom
-# TODO: [重要]  把get title/author/intro等function写成一个
+# TODO: IMPORTANT:  research how to extract js modified dom
+# TODO: IMPORTANT:  把 get title/author/intro 等 function 写成一个
 
 
 def kanunu(all_chapter, href, index, source, url):
@@ -51,7 +37,6 @@ def kanunu1(all_chapter, href, index, source, url):
             abs_link = url + href
         if abs_link not in all_chapter:
             all_chapter.append(abs_link)
-
 
 
 def ty2016(all_chapter, href, index, source, url):
@@ -473,7 +458,7 @@ if __name__ == "__main__":
     sc = 'http://book.sfacg.com/Novel/108421/183067/1512447/'
 
     # Test build epub
-    build_epub(kanunu1_index)
+    build_epub(sfacg_index)
     # url = txshuku_index
     # source = get_source(url)
     # res = requests.get(url)
