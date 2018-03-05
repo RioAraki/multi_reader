@@ -1,4 +1,4 @@
-﻿scraper/epub
-scraper/__pycache__
-scraper/.idea
-/.idea
+﻿scraper/epub/*
+scraper/__pycache__/*
+scraper/.idea/*
+/.idea/*
