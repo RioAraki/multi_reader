@@ -17,7 +17,7 @@ from bs4 import BeautifulSoup
 # TODO: 进一步探索 epub 的格式规范以创造更符合规矩标准的epub文件
 # TODO：思考怎么搞epub的封面图？
 
-
+# TODO： Research more on travis CI to manage the program
 
 
 def kanunu(all_chapter, href, index, source, url):
