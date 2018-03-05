@@ -24,4 +24,4 @@ def check_validity(link):
 
 
 if __name__ == '__main__':
-    print (search('水浒传'))
+    print (search('斗破苍穹'))

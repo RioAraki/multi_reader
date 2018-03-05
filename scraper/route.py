@@ -12,7 +12,6 @@ from bs4 import BeautifulSoup
 
 # TODO: 添加 log 系统，让用户知道进度
 # TODO: 如果无法找到对应小说，做 error check 并让用户反馈
-# TODO: 把所有 string 放到专门的string file
 # TODO: 在epub做好后删除文件夹
 # TODO：提高目录页的美观程度
 # TODO: 进一步探索 epub 的格式规范以创造更符合规矩标准的epub文件
@@ -293,52 +292,22 @@ def contentopf(chapter_dict, title, author, intro, source_site, source_url, dirn
 
 
 def pagexhtml(title, author, intro, source_site, source_url, dirname):
-    head1 = "<?xml version='1.0' encoding='utf-8' standalone='no'?>\n<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.1//EN'" \
-            " 'http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd'>\n<html xmlns='http://www.w3.org/1999/xhtml' xml:lang='" \
-            "zh-CN'>\n<head>\n<meta http-equiv='Content-Type' content='text/html; charset=UTF-8'/>\n<title>书籍信息</title>\n" \
-            "<style type='text/css' title='override_css'>\n@page {padding: 0pt; margin:0pt}\nbody { text-align: left;" \
-            " padding:0pt; margin: 0pt;font-size: 1.0em}\nul,li{list-style-type:none;margin:0;padding:0;line-height:" \
-            " 2.5em;font-size: 0.8em}\ndiv,h1,h2 { margin: 0pt; padding: 0pt}\nh1{font-size:1.2em}\nh2 {font-size: 1.1em}" \
-            "\n.copyright{color:#ff4500}\n</style>\n</head>\n<body>\n<div>\n<h1>"
-    head2 = "</h1>\n<h2>作者："
-    head3 = "</h2>\n<ul>\n<li>内容简介："
-    head4 = "</li>\n<li class='copyright'>由 multi_reader 开源项目提供epub下载，现支持将部分中文在线阅读网站的书库直接转成epub格式。\
-    \n可访问 https://github.com/RioAraki/multi_reader 查看详情。\n欢迎 fork, star, 提 issue 等。</li>\n<li class='copyright'>书籍内容由"
-    head5 = "提供，请访问："
-    head6 = "</li>\n</ul>\n</div>\n</body>\n</html>"
+    head1, head2, head3, head4, head5, head6 = st.px_h1, st.px_h2, st.px_h3, st.px_h4, st.px_h5, st.px_h6
     content = head1 + title + head2 + author + head3 + intro + head4 + source_site + head5 + source_url + head6
     with open(dirname+'/page.xhtml', "wb") as f:
         f.write(content.encode('utf-8'))
         f.close()
 
-
 # TODO: let user modify the format accordingly
 def stylesheetcss(dirname):
-    content = "body{margin:10px;font-size:1em}ul,li{list-style-type:none;margin:0;padding:0}p{text-indent:2em;line-" \
-              "height:1.5em;margin-top:0;margin-bottom:1.5em}.catalog{line-height:2.5em;font-size:.8em}li{border-bot" \
-              "tom:1px solid #D5D5D5}h1{font-size:1.6em;font-weight:700}h2{display:block;font-size:1.2em;font-weight" \
-              ":700;margin-bottom:.83em;margin-left:0;margin-right:0;margin-top:1em}.mbppagebreak{display:block;marg" \
-              "in-bottom:0;margin-left:0;margin-right:0;margin-top:0}a{color:inherit;text-decoration:none;cursor:def" \
-              "ault}a[href]{color:blue;text-decoration:none;cursor:pointer}.italic{font-style:italic}"
+    content = st.style_c
     with open(dirname+'/stylesheet.css', 'w') as f:
         f.write(content)
         f.close()
 
 def tocncx(chapter_dict, title, author, dirname):
-    head1 = "<?xml version='1.0' encoding='utf-8'?>\n<ncx xmlns='http://www.daisy.org/z3986/2005/ncx/' version='2005-1'>\n" \
-            "<head>\n<meta content='pymtrdr:000001' name='dtb:uid'/>\n<meta content='2' name='dtb:depth'/>\n<meta content='0' name='dtb:totalPageCount'/>\n" \
-            "<meta content='0' name='dtb:maxPageNumber'/>\n</head>\n<docTitle>\n<text>"
-    head2 = "</text>\n</docTitle>\n\n<docAuthor>\n<text>"
-    head3 = "</text>\n</docAuthor>\n\n<navMap>"
-    tail = "</navMap>\n\n</ncx>"
-
-
-    nav1 = "<navPoint id='chapter_"
-    nav2 = "' playOrder='"
-    nav3 = "'><navLabel><text>"
-    nav4 = "</text></navLabel><content src='chapter_"
-    nav5 = ".xhtml'/></navPoint>\n"
-
+    head1, head2, head3, tail = st.toc_h1, st.toc_h2, st.toc_h3, st.toc_t
+    nav1, nav2, nav3, nav4, nav5 = st.toc_n1, st.toc_n2, st.toc_n3, st.toc_n4, st.toc_n5
     content = head1 + title + head2 + author + head3
     for chapter, title in chapter_dict.items():
         content += nav1 +str(chapter)+ nav2 + str(chapter) + nav3 + title + nav4 + str(chapter) + nav5
@@ -352,15 +321,12 @@ def tocncx(chapter_dict, title, author, dirname):
 def build_epub(url):
     source = get_source(url)
     res = requests.get(url)
-    res = requests.get(url)
     if source != "sfacg":  # corner case, sfacg does not require encoding
         res.encoding = 'gb2312'
 
     page = re.sub('&nbsp;', ' ', res.text)  # for all text in res, change &nbsp to ' '
     soup = BeautifulSoup(page, 'html.parser')
-
     title = get_title_main(soup, source)
-
     author = get_author(soup, source, url)
     intro = get_intro(soup, get_source(url), url)
 
