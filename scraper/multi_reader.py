@@ -1,12 +1,11 @@
-from search import search
+from search import search_ask
 from route import build_epub
 from compress import compress
 
-
-name = input("Enter the book name:")
-link = search(name)
+link = search_ask()
 folder = build_epub(link)
 epub = compress(folder)
+
 
 
 

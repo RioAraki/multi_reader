@@ -1,8 +1,11 @@
 import requests
 import re
 import os
+import logging
 import string_lib as st
 from bs4 import BeautifulSoup
+
+logging.basicConfig(level=logging.INFO)
 
 
 # TODO: IMPORTANT:  research how to extract js modified dom
@@ -16,7 +19,7 @@ from bs4 import BeautifulSoup
 # TODO：提高目录页的美观程度
 # TODO: 进一步探索 epub 的格式规范以创造更符合规矩标准的epub文件
 # TODO：思考怎么搞epub的封面图？
-
+# TODO: Think about multi threading
 # TODO： Research more on travis CI to manage the program
 
 
@@ -225,6 +228,7 @@ def get_epub_content(soup, folder, source, url):
         title_dict[counter] = title
         content = get_content(soup, get_source(url))
         file_name = 'chapter_' + str(counter) + '.xhtml'
+        logging.info("Creating content: %s...", file_name)
         epub_content = h0 + title + h1 + h20 + title + h21 + content + tail
         file = open(folder+'/'+file_name, "wb")
         file.write(epub_content.encode('utf-8'))
@@ -323,15 +327,16 @@ def build_epub(url):
     res = requests.get(url)
     if source != "sfacg":  # corner case, sfacg does not require encoding
         res.encoding = 'gb2312'
-
     page = re.sub('&nbsp;', ' ', res.text)  # for all text in res, change &nbsp to ' '
     soup = BeautifulSoup(page, 'html.parser')
+    logging.info("Getting title/ author/ intro information...")
     title = get_title_main(soup, source)
     author = get_author(soup, source, url)
     intro = get_intro(soup, get_source(url), url)
 
     # create directory
     dirname = title
+    logging.info("Creating folder...")
     os.makedirs(title, exist_ok= True)
 
     # write content in the directory
@@ -339,30 +344,37 @@ def build_epub(url):
 
     # create meta_inf
     # TODO: a better way might be have a META-INF folder ready and copy it to other epub folders since META-INF never changes
+    logging.info("Creating META_INF file...")
     META_INF(dirname)
 
     # create catelog.xhtml
+    logging.info("Creating catelog.xhtml...")
     catalogxhtml(chapter_dict, title, dirname)
 
     # create mimetype
     # TODO: a better way might be have a mimetype folder ready and copy it to other epub folders since mimetype never changes
+    logging.info("Creating MIMETYPE")
     mimetype(dirname)
 
     # create content.opf
+    logging.info("Creating content.opf...")
     source = get_source(url)
     source_site = support[source][7]
     source_url = support[source][8]
     contentopf(chapter_dict, title, author, intro, source_site, source_url, dirname)
 
     # create page.xhtml
+    logging.info("Creating page.xthml...")
     pagexhtml(title, author, intro, source_site, source_url, dirname)
 
     # create stylesheet.css
+    logging.info("Creating stylesheet.css...")
     stylesheetcss(dirname)
 
     # create tocncx
+    logging.info("Creating toc.ncx...")
     tocncx(chapter_dict, title, author, dirname)
-
+    logging.info("Compressing all files and convert to epub...")
     return title
 
 if __name__ == "__main__":
