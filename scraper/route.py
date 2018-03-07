@@ -12,9 +12,6 @@ logging.basicConfig(level=logging.INFO)
 # TODO: IMPORTANT:  把 get title/author/intro 等 function 写成一个
 # TODO: IMPORTANT:  之后用OOP的思想重构，每个网站都作为一个class，有各种性质（content/ title/ intro/ author/ etc.）
 
-
-# TODO: 添加 log 系统，让用户知道进度
-# TODO: 如果无法找到对应小说，做 error check 并让用户反馈
 # TODO: 在epub做好后删除文件夹
 # TODO：提高目录页的美观程度
 # TODO: 进一步探索 epub 的格式规范以创造更符合规矩标准的epub文件
@@ -374,7 +371,7 @@ def build_epub(url):
     # create tocncx
     logging.info("Creating toc.ncx...")
     tocncx(chapter_dict, title, author, dirname)
-    logging.info("Compressing all files and convert to epub...")
+
     return title
 
 if __name__ == "__main__":
