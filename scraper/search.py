@@ -1,4 +1,3 @@
-import pprint # TODO: Understand what does pprint do
 from googleapiclient.discovery import build
 
 # google api: AIzaSyCh7vVI5NtzMrIpCMUJshx5Rd855U0hXe4

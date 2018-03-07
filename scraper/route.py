@@ -12,7 +12,6 @@ logging.basicConfig(level=logging.INFO)
 # TODO: IMPORTANT:  把 get title/author/intro 等 function 写成一个
 # TODO: IMPORTANT:  之后用OOP的思想重构，每个网站都作为一个class，有各种性质（content/ title/ intro/ author/ etc.）
 
-# TODO: 在epub做好后删除文件夹
 # TODO：提高目录页的美观程度
 # TODO: 进一步探索 epub 的格式规范以创造更符合规矩标准的epub文件
 # TODO：思考怎么搞epub的封面图？
@@ -164,14 +163,14 @@ def parse_index(soup, source, url):
 def get_content(soup, source):
 
     if source in support:
-        content = support[source][2](soup)
+        return support[source][2](soup)
 
-    if source == 'dushu369':
-        #TODO: different way to modify br in dushu 369
-        content = re.sub('<br/>\n<br/>', '</p>\n<p>', content)
-    else:
-        content = re.sub('<br/>\n<br/>', '</p>\n<p>', content)
-    return content
+    # if source == 'dushu369':
+    #     #TODO: different way to modify br in dushu 369
+    #     content = re.sub('<br/>\n<br/>', '</p>\n<p>', content)
+    # else:
+    #     content = re.sub('<br/>\n<br/>', '</p>\n<p>', content)
+    # return content
 
 
 def get_title_main(soup, source):
