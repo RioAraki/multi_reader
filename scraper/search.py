@@ -17,7 +17,7 @@ def search_ask():
         print ("{} -- Title:  {},  Link:  {}".format(i+1, res['items'][i]['title'], res['items'][i]['link']))
     print ("Here are the possible results we found, Type number 1/2/3 to choose the best fit one."
           "\nIf you don't see any correct title/ link, it means the book is not supported yet.\nFeel free to "
-          "give us an issue and we would consider to add it to our support like\n")
+          "raise an issue and we would consider to add the site to our support list\n")
     num = int(input("Enter the number: "))
 
     while num < 1 or num > 3:
