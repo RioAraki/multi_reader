@@ -11,6 +11,7 @@ logging.basicConfig(level=logging.INFO)
 # TODO: IMPORTANT:  research how to extract js modified dom
 # TODO: IMPORTANT:  把 get title/author/intro 等 function 写成一个
 # TODO: IMPORTANT:  之后用OOP的思想重构，每个网站都作为一个class，有各种性质（content/ title/ intro/ author/ etc.）
+# TODO: IMPORTANT:  Check compatibility on python 2.7
 
 # TODO：提高目录页的美观程度
 # TODO: 进一步探索 epub 的格式规范以创造更符合规矩标准的epub文件
