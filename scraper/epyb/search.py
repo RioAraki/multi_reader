@@ -15,12 +15,15 @@ def search_ask():
 
     for i in range(0,3):
         print ("{} -- Title:  {},  Link:  {}".format(i+1, res['items'][i]['title'], res['items'][i]['link']))
-    num = input("Here are the possible results we found, Type number 1/2/3 to choose the best fit one."
+    print ("Here are the possible results we found, Type number 1/2/3 to choose the best fit one."
           "\nIf you don't see any correct title/ link, it means the book is not supported yet.\nFeel free to "
-          "give us an issue and we would consider to add it to our support like\n"
-          "Enter the number: ")
+          "raise an issue and we would consider to add the site to our support list\n")
+    num = int(input("Enter the number: "))
 
-    return res['items'][int(num)-1]['link']
+    while num < 1 or num > 3:
+        print ("Invalid Number， please select again")
+        num = int(input("Enter the number: "))
+    return res['items'][num-1]['link']
 
 def check_validity(link):
     pass
