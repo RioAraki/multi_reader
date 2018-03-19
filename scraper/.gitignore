@@ -1,4 +1,4 @@
-﻿epub/*
+﻿epyb/*
 __pycache__/*
 .idea/*
-
+epyb.egg-info

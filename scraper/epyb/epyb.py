@@ -8,6 +8,5 @@ def main():
     folder = build_epub(link)
     epub = compress(folder)
 
-
-
-
+if __name__ == '__main__':
+    main()

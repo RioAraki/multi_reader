@@ -1,0 +1,16 @@
+Metadata-Version: 1.1
+Name: epyb
+Version: 0.1.0
+Summary: A tool which allows you to download books from certain websites and convert to epub for you automatically.
+Home-page: https://rioaraki.github.io/epyb
+Author: Yue Li
+Author-email: yueee.li@mail.utoronto.ca
+License: UNKNOWN
+Description: An integration of customer google search + web scraper for book site + epub convert.
+Keywords: online book epub converter
+Platform: UNKNOWN
+Classifier: Development Status :: 3 - Alpha
+Classifier: Intended Audience :: All
+Classifier: Topic :: Internet :: WWW/HTTP :: Dynamic Content
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Programming Language :: Python :: 3.6

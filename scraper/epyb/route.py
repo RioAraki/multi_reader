@@ -20,6 +20,9 @@ logging.basicConfig(level=logging.INFO)
 # TODO： Research more on travis CI to manage the program
 
 
+
+# Define the relation between index url and each chapter url
+
 def kanunu(all_chapter, href, index, source, url):
     if source == 'kanunu' and href and index in href:
         pos = url.index(index)
@@ -67,6 +70,8 @@ def sfacg(all_chapter, href, index, source, url):
         abs_link = url[:url_pos] + href[href_pos:]
         if abs_link not in all_chapter:
             all_chapter.append(abs_link)
+
+def wenku8()
 
 # Support provides all info about different supported site, the orders are:
 # site name (correspond to different method to extract chapter link)/ index/ content/ title/ author/ intro
@@ -129,7 +134,9 @@ support = {'kanunu': [kanunu,
                     lambda soup: soup.find_all('p', {"class": "summary big-profiles"}), # author
                     "SFACG",
                     "http://www.sfacg.com/"
-                    ]
+                    ],
+           'wenku8':[], # TODO
+           '23qb':[] # TODO
            }
 
 def get_source(url):
@@ -328,6 +335,7 @@ def build_epub(url):
     soup = BeautifulSoup(page, 'html.parser')
     logging.info("Getting title/ author/ intro information...")
     title = get_title_main(soup, source)
+    print (title)
     author = get_author(soup, source, url)
     intro = get_intro(soup, get_source(url), url)
 

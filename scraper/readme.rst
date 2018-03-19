@@ -1,0 +1,1 @@
+The project EPYB is an integration tool of a custom google search engine + a web scraper + an epub converter. It aims to provide the best experience for people to convert online book to local epub files.
