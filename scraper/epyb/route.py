@@ -240,7 +240,7 @@ def wenku8_intro(url):
     res.encoding = 'gb2312'
     page = re.sub('&nbsp;', ' ', res.text)  # for all text in res, change &nbsp to ' '
     soup = BeautifulSoup(page, 'html.parser')
-    return soup.find_all('span', {"style": "font-size:14px;"})[0].text
+    return soup.find_all('span', {"style": "font-size:14px;"})[1].text
 
 
 def get_author(soup, source, url):
@@ -454,16 +454,16 @@ if __name__ == "__main__":
     qb23 = 'https://www.23qb.com/book/3404/969333.html'
 
 
-    build_epub(wenku8_index)
+    # build_epub(wenku8_index)
 
     # Test each function
 
-    # url = wenku8_index
-    # source = get_source(url)
-    # res = requests.get(url)
-    # res.encoding = 'gb2312'
-    # page = re.sub('&nbsp;', ' ', res.text)  # for all text in res, change &nbsp to ' '
-    # soup = BeautifulSoup(page, 'html.parser')
+    url = wenku8_index
+    source = get_source(url)
+    res = requests.get(url)
+    res.encoding = 'gb2312'
+    page = re.sub('&nbsp;', ' ', res.text)  # for all text in res, change &nbsp to ' '
+    soup = BeautifulSoup(page, 'html.parser')
 
     # content = get_content(soup, source)
     # print (content)
@@ -471,7 +471,7 @@ if __name__ == "__main__":
     # print (title)
     # title = get_title_chapter(soup, source)
     # print(title)
-    # print(get_intro(soup, source, url))
+    print(get_intro(soup, source, url))
     # print (get_author(soup, source, url))
 
 
