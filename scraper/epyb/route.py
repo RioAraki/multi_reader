@@ -71,7 +71,12 @@ def sfacg(all_chapter, href, index, source, url):
         if abs_link not in all_chapter:
             all_chapter.append(abs_link)
 
-def wenku8()
+def wenku8(all_chapter, href, index, source, url):
+    if source == 'wenku8':
+        pass
+
+def qb23():
+    pass
 
 # Support provides all info about different supported site, the orders are:
 # site name (correspond to different method to extract chapter link)/ index/ content/ title/ author/ intro
@@ -135,8 +140,26 @@ support = {'kanunu': [kanunu,
                     "SFACG",
                     "http://www.sfacg.com/"
                     ],
-           'wenku8':[], # TODO
-           '23qb':[] # TODO
+           'wenku8':[wenku8,
+                     lambda url: url.split('/')[-3],  # index in url
+                     lambda soup: str(soup.find_all('div', {'id': 'ChapterBody'})[0]),  # content
+                     lambda soup: soup.find_all('h1')[0].text,  # main title
+                     lambda soup: soup.find_all('h1')[0].text,  # chapter title
+                     lambda soup: soup.find_all('p', {"class": "summary big-profiles"}),
+                     lambda soup: soup.find_all('p', {"class": "summary big-profiles"}),  # author
+                     "SFACG",
+                     "http://www.sfacg.com/"
+                     ], # TODO
+           '23qb':[qb23,
+                   lambda url: url.split('/')[-3],  # index in url
+                   lambda soup: str(soup.find_all('div', {'id': 'ChapterBody'})[0]),  # content
+                   lambda soup: soup.find_all('h1')[0].text,  # main title
+                   lambda soup: soup.find_all('h1')[0].text,  # chapter title
+                   lambda soup: soup.find_all('p', {"class": "summary big-profiles"}),
+                   lambda soup: soup.find_all('p', {"class": "summary big-profiles"}),  # author
+                   "SFACG",
+                   "http://www.sfacg.com/"
+                   ], # TODO
            }
 
 def get_source(url):
@@ -155,6 +178,10 @@ def get_source(url):
         source = 'txshuku'
     elif 'sfacg' in url:
         source = 'sfacg'
+    elif 'wenku8' in url:
+        source = 'wenku8'
+    elif '23qb' in url:
+        source = 'qb23'
     return source
 
 def parse_index(soup, source, url):

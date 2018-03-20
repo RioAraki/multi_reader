@@ -1,7 +1,0 @@
-setup.cfg
-setup.py
-epyb.egg-info/PKG-INFO
-epyb.egg-info/SOURCES.txt
-epyb.egg-info/dependency_links.txt
-epyb.egg-info/requires.txt
-epyb.egg-info/top_level.txt
