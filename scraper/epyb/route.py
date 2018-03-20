@@ -83,7 +83,7 @@ def qb23():
 support = {'kanunu': [kanunu,
                       lambda url : url.split('/')[-1].split('.')[0], # index in url
                       lambda soup: str(soup.find_all('p')[0]), # content
-                      lambda soup: soup.find_all('h2')[0].text, # main title
+                      lambda soup: soup.find_all('h2')[0].text, # book title
                       lambda soup: soup.find_all('h2')[0].text, # chapter title
                       lambda soup: soup.find_all('td', {'class': 'p10-21'})[0].text, # intro
                       lambda soup: soup.find_all('td')[12].find_all('td')[1].text.split(" ")[1].split("：")[2], # author
@@ -93,7 +93,7 @@ support = {'kanunu': [kanunu,
            'kanunu1':[kanunu1,
                       lambda url : url.split('/')[-2], # index in url
                       lambda soup: str(soup.find_all('p')[0]), # content
-                      lambda soup: soup.find_all('h1')[0].text, # main title
+                      lambda soup: soup.find_all('h1')[0].text, # book title
                       lambda soup: soup.find_all('font')[0].text, # chapter title
                       lambda soup: soup.find_all('td', {'class': 'p10-24'})[1].text, # intro
                       lambda soup: soup.find_all('td')[12].text.split("：")[1].split(" ")[0],  #author
@@ -103,7 +103,7 @@ support = {'kanunu': [kanunu,
            'ty2016':[ty2016,
                      lambda url : url.split('/')[-2], # index in url
                      lambda soup: str(soup.find_all('p')[1]), # content
-                     lambda soup: soup.find_all('h1')[0].text, # main title
+                     lambda soup: soup.find_all('h1')[0].text, # book title
                      lambda soup: soup.find_all('h1')[0].text, # chapter title
                      lambda soup: soup.find_all('p')[0].text, # intro
                      lambda soup: soup.find_all('h2')[1].a.text, #author
@@ -113,7 +113,7 @@ support = {'kanunu': [kanunu,
            'dushu369':[dushu369,
                        lambda url : url.split('/')[-3], # index in url
                        lambda soup: str(soup.find_all("td", {"class": "content"})[0]), # content
-                       lambda soup: soup.find_all('td', {'class':'cntitle'})[0].text.split('《')[1][:-1], # main title
+                       lambda soup: soup.find_all('td', {'class':'cntitle'})[0].text.split('《')[1][:-1], # book title
                        lambda soup: soup.find_all('td', {'class':'cntitle'})[0].text, # chapter title
                        lambda soup: soup.find_all('td', {'class':'Readme'})[0].text, # intro
                        lambda soup: soup.find_all('td', {'class':'cntitle'})[0].text.split('《')[0], # author
@@ -123,7 +123,7 @@ support = {'kanunu': [kanunu,
            'txshuku':[txshuku,
                       lambda url : url.split('/')[-1].split('.')[0], # index in url
                       lambda soup: str(soup.find_all('div', {"class":"contentbox"})[0]), # content
-                      lambda soup: soup.find_all('h1')[0].text[:-4], # main title
+                      lambda soup: soup.find_all('h1')[0].text[:-4], # book title
                       lambda soup: soup.find_all('h1')[0].text, # chapter title
                       lambda soup: soup.find_all('p')[1].text, # intro
                       lambda soup: soup.find_all('p')[1].text, # author
@@ -133,7 +133,7 @@ support = {'kanunu': [kanunu,
            'sfacg':[sfacg,
                     lambda url: url.split('/')[-3], # index in url
                     lambda soup: str(soup.find_all('div', {'id':'ChapterBody'})[0]), # content
-                    lambda soup: soup.find_all('h1')[0].text, # main title
+                    lambda soup: soup.find_all('h1')[0].text, # book title
                     lambda soup: soup.find_all('h1')[0].text, # chapter title
                     lambda soup: soup.find_all('p', {"class": "summary big-profiles"}),  # TODO: intro <- does not work for now
                     lambda soup: soup.find_all('p', {"class": "summary big-profiles"}), # author
@@ -141,19 +141,19 @@ support = {'kanunu': [kanunu,
                     "http://www.sfacg.com/"
                     ],
            'wenku8':[wenku8,
-                     lambda url: url.split('/')[-3],  # index in url
-                     lambda soup: str(soup.find_all('div', {'id': 'ChapterBody'})[0]),  # content
-                     lambda soup: soup.find_all('h1')[0].text,  # main title
-                     lambda soup: soup.find_all('h1')[0].text,  # chapter title
-                     lambda soup: soup.find_all('p', {"class": "summary big-profiles"}),
-                     lambda soup: soup.find_all('p', {"class": "summary big-profiles"}),  # author
-                     "SFACG",
-                     "http://www.sfacg.com/"
-                     ], # TODO
+                     lambda url: url.split('/')[-2],  # index in url
+                     lambda soup: str(soup.find_all('div', {'id': 'content'})[0]),  # content #TODO: unneeded ul included
+                     lambda soup: soup.find_all('div', {'id': 'title'})[0].text,  # book title
+                     lambda soup: soup.find_all('div', {'id': 'title'})[0].text,  # chapter title
+                     lambda soup: soup.find_all('p', {"style": "font-size:14px;"}),  # Intro # Important: url changed
+                     lambda soup: soup.find_all('td')[5],  # author
+                     "轻小说文库",
+                     "http://www.wenku8.com/"
+                     ],
            '23qb':[qb23,
                    lambda url: url.split('/')[-3],  # index in url
                    lambda soup: str(soup.find_all('div', {'id': 'ChapterBody'})[0]),  # content
-                   lambda soup: soup.find_all('h1')[0].text,  # main title
+                   lambda soup: soup.find_all('h1')[0].text,  # book title
                    lambda soup: soup.find_all('h1')[0].text,  # chapter title
                    lambda soup: soup.find_all('p', {"class": "summary big-profiles"}),
                    lambda soup: soup.find_all('p', {"class": "summary big-profiles"}),  # author
@@ -217,15 +217,26 @@ def get_title_chapter(soup, source):
         return support[source][4](soup)
 
 def get_intro(soup, source, url):
-    if source != 'sfacg' and source in support:
-        return support[source][5](soup)
-    elif source == 'sfacg':
-        # pos = url.index('MainIndex')
-        # url = url[:pos]
-        # res = requests.get(url)
-        # page = re.sub('&nbsp;', ' ', res.text)  # for all text in res, change &nbsp to ' '
-        # soup = BeautifulSoup(page, 'html.parser')
-        return "SFACG: 尚无法获得作品简介"# support[source][5](soup)
+    if source in support:
+        if source == 'sfacg':
+            # pos = url.index('MainIndex')
+            # url = url[:pos]
+            # res = requests.get(url)
+            # page = re.sub('&nbsp;', ' ', res.text)  # for all text in res, change &nbsp to ' '
+            # soup = BeautifulSoup(page, 'html.parser')
+            return "SFACG: 尚无法获得作品简介"  # support[source][5](soup)
+        elif source == 'wenku8':
+            new_url = url
+        else:
+            return support[source][5](soup)
+
+def wenku8_intro(soup, source, url):
+    # http://www.wenku8.com/novel/2/2353/index.htm
+    # http://www.wenku8.com/book/2353.htm
+    new_url = "/".join(url.split('/')[:-3]).replace("novel", "book") + '/' + url.split('/')[-2] + '.htm'
+    print (new_url)
+
+
 
 def get_author(soup, source, url):
     if source != 'txshuku' and source != 'sfacg' and source in support:
@@ -431,19 +442,29 @@ if __name__ == "__main__":
     sfacg_index = 'http://book.sfacg.com/Novel/108421/MainIndex/'
     sc = 'http://book.sfacg.com/Novel/108421/183067/1512447/'
 
-    # Test build epub
+    wenku8_index = 'http://www.wenku8.com/novel/2/2353/index.htm'
+    wenku8 = 'http://www.wenku8.com/novel/2/2353/86807.htm'
 
-    build_epub(kanunu_index)
+    qb23_index = 'https://www.23qb.com/book/3404/'
+    qb23 = 'https://www.23qb.com/book/3404/969333.html'
+
+
+    # build_epub(kanunu_index)
 
     # Test each function
 
-    # url = sc
-    # source = get_source(url)
-    # res = requests.get(url)
-    # # res.encoding = 'gb2312'
-    # page = re.sub('&nbsp;', ' ', res.text)  # for all text in res, change &nbsp to ' '
-    # soup = BeautifulSoup(page, 'html.parser')
-    #
+    url = wenku8_index
+
+
+
+    source = get_source(url)
+    res = requests.get(url)
+    res.encoding = 'gb2312'
+    page = re.sub('&nbsp;', ' ', res.text)  # for all text in res, change &nbsp to ' '
+    soup = BeautifulSoup(page, 'html.parser')
+
+    wenku8_intro(source, soup, url)
+
     # content = get_content(soup, source)
     # print (content)
     # title = get_title_main(soup, source)
