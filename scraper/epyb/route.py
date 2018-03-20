@@ -50,8 +50,7 @@ def ty2016(all_chapter, href, index, source, url):
 
 def dushu369(all_chapter, href, index, source, url):
     if source == 'dushu369' and href and index in href and any(char.isdigit() for char in href):
-        pos = url.index(index) - 1
-        abs_link = url[:pos] + href
+        abs_link = url[:url.index(index)-1] + href
         if abs_link not in all_chapter:
             all_chapter.append(abs_link)
 
@@ -72,8 +71,11 @@ def sfacg(all_chapter, href, index, source, url):
             all_chapter.append(abs_link)
 
 def wenku8(all_chapter, href, index, source, url):
-    if source == 'wenku8':
-        pass
+    if source == 'wenku8' and href and href.split(".")[0].isdigit() and href.split(".")[1] == "htm": # better with regex
+        url_pos = url.index(index)
+        abs_link = url[:url_pos]+index+'/'+href
+        if abs_link not in all_chapter:
+            all_chapter.append(abs_link)
 
 def qb23():
     pass
@@ -135,8 +137,8 @@ support = {'kanunu': [kanunu,
                     lambda soup: str(soup.find_all('div', {'id':'ChapterBody'})[0]), # content
                     lambda soup: soup.find_all('h1')[0].text, # book title
                     lambda soup: soup.find_all('h1')[0].text, # chapter title
-                    lambda soup: soup.find_all('p', {"class": "summary big-profiles"}),  # TODO: intro <- does not work for now
-                    lambda soup: soup.find_all('p', {"class": "summary big-profiles"}), # author
+                    lambda soup: soup.find_all('p', {"class": "summary big-profiles"}).text,  # TODO: intro <- does not work for now
+                    lambda soup: soup.find_all('p', {"class": "summary big-profiles"}).text, # author
                     "SFACG",
                     "http://www.sfacg.com/"
                     ],
@@ -145,8 +147,8 @@ support = {'kanunu': [kanunu,
                      lambda soup: str(soup.find_all('div', {'id': 'content'})[0]),  # content #TODO: unneeded ul included
                      lambda soup: soup.find_all('div', {'id': 'title'})[0].text,  # book title
                      lambda soup: soup.find_all('div', {'id': 'title'})[0].text,  # chapter title
-                     lambda soup: soup.find_all('p', {"style": "font-size:14px;"}),  # Intro # Important: url changed
-                     lambda soup: soup.find_all('td')[5],  # author
+                     lambda soup: soup.find_all('span', {"style": "font-size:14px;"})[1].text,  # Intro # Important: url changed
+                     lambda soup: soup.find_all('div', {'id': 'info'})[0].text.split("：")[1],  # author
                      "轻小说文库",
                      "http://www.wenku8.com/"
                      ],
@@ -226,16 +228,19 @@ def get_intro(soup, source, url):
             # soup = BeautifulSoup(page, 'html.parser')
             return "SFACG: 尚无法获得作品简介"  # support[source][5](soup)
         elif source == 'wenku8':
-            new_url = url
+            return wenku8_intro(url)
         else:
             return support[source][5](soup)
 
-def wenku8_intro(soup, source, url):
-    # http://www.wenku8.com/novel/2/2353/index.htm
-    # http://www.wenku8.com/book/2353.htm
+# helper function for wenku8's intro since its in a different webpage
+def wenku8_intro(url):
+    source = 'wenku8'
     new_url = "/".join(url.split('/')[:-3]).replace("novel", "book") + '/' + url.split('/')[-2] + '.htm'
-    print (new_url)
-
+    res = requests.get(new_url)
+    res.encoding = 'gb2312'
+    page = re.sub('&nbsp;', ' ', res.text)  # for all text in res, change &nbsp to ' '
+    soup = BeautifulSoup(page, 'html.parser')
+    return soup.find_all('span', {"style": "font-size:14px;"})[0].text
 
 
 def get_author(soup, source, url):
@@ -449,21 +454,16 @@ if __name__ == "__main__":
     qb23 = 'https://www.23qb.com/book/3404/969333.html'
 
 
-    # build_epub(kanunu_index)
+    build_epub(wenku8_index)
 
     # Test each function
 
-    url = wenku8_index
-
-
-
-    source = get_source(url)
-    res = requests.get(url)
-    res.encoding = 'gb2312'
-    page = re.sub('&nbsp;', ' ', res.text)  # for all text in res, change &nbsp to ' '
-    soup = BeautifulSoup(page, 'html.parser')
-
-    wenku8_intro(source, soup, url)
+    # url = wenku8_index
+    # source = get_source(url)
+    # res = requests.get(url)
+    # res.encoding = 'gb2312'
+    # page = re.sub('&nbsp;', ' ', res.text)  # for all text in res, change &nbsp to ' '
+    # soup = BeautifulSoup(page, 'html.parser')
 
     # content = get_content(soup, source)
     # print (content)
