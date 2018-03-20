@@ -14,6 +14,9 @@ EPYB is a tool that allows you to search book name online and transfer the book 
 3. [读书369](http://www.dushu369.com/)
 4. [天下书库](http://http://www.txshuku.net/)
 5. [SFACG](http://www.sfacg.com/)
+6. [轻小说文库](http://www.wenku8.com/)
+
 
 # Dependencies
-TODO
+  - requests
+  - googleclientapi
