@@ -293,13 +293,15 @@ def get_epub_content(soup, folder, source, url):
     title_dict = {}
     for link in all_chapters:
 
-        # REQUEST
-        res = requests.get(link)
-        if source != "sfacg":
-            res.encoding = 'gb2312'
-        page = re.sub('&nbsp;', ' ', res.text)  # for all text in res, change &nbsp to ' '
-        soup = BeautifulSoup(page, 'html.parser')
-        # REQUEST
+        soup = site_parse(source, link)
+
+        # # REQUEST
+        # res = requests.get(link)
+        # if source != "sfacg":
+        #     res.encoding = 'gb2312'
+        # page = re.sub('&nbsp;', ' ', res.text)  # for all text in res, change &nbsp to ' '
+        # soup = BeautifulSoup(page, 'html.parser')
+        # # REQUEST
 
         title = (get_title_chapter(soup, get_source(url)))
         title_dict[counter] = title
