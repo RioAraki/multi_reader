@@ -1,5 +1,4 @@
-﻿epyb/*
-__pycache__/*
+﻿__pycache__/*
 .idea/*
 build/
 dist/
