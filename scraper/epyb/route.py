@@ -12,6 +12,7 @@ logging.basicConfig(level=logging.INFO)
 # TODO: IMPORTANT:  把 get title/author/intro 等 function 写成一个
 # TODO: IMPORTANT:  之后用OOP的思想重构，每个网站都作为一个class，有各种性质（content/ title/ intro/ author/ etc.）
 # TODO: IMPORTANT:  Check compatibility on python 2.7
+# TODO: IMPORTANT: 解决不同网站转码不同的问题
 
 # TODO：提高目录页的美观程度
 # TODO: 进一步探索 epub 的格式规范以创造更符合规矩标准的epub文件
@@ -19,7 +20,27 @@ logging.basicConfig(level=logging.INFO)
 # TODO: Think about multi threading
 # TODO： Research more on travis CI to manage the program
 
-
+def get_source(url):
+    source = ''
+    index = ''
+    if 'kanunu' in url: # kanunu 1 & 2
+        if url.split('/')[-1] and url.split('/')[-1] != "index.html":
+            source = 'kanunu'
+        else:
+            source = 'kanunu1'
+    elif 'ty2016' in url:
+        source = 'ty2016'
+    elif 'dushu369' in url:
+        source = 'dushu369'
+    elif 'txshuku' in url:
+        source = 'txshuku'
+    elif 'sfacg' in url:
+        source = 'sfacg'
+    elif 'wenku8' in url:
+        source = 'wenku8'
+    elif '23qb' in url:
+        source = 'qb23'
+    return source
 
 # Define the relation between index url and each chapter url
 
@@ -80,8 +101,10 @@ def wenku8(all_chapter, href, index, source, url):
 def qb23():
     pass
 
+##############################
+
 # Support provides all info about different supported site, the orders are:
-# site name (correspond to different method to extract chapter link)/ index/ content/ title/ author/ intro
+# site name (correspond to different method to extract chapter link)/ index/ content/ book title/ chapter title/ intro/ author/ site name string/ site url
 support = {'kanunu': [kanunu,
                       lambda url : url.split('/')[-1].split('.')[0], # index in url
                       lambda soup: str(soup.find_all('p')[0]), # content
@@ -164,27 +187,18 @@ support = {'kanunu': [kanunu,
                    ], # TODO
            }
 
-def get_source(url):
-    source = ''
-    index = ''
-    if 'kanunu' in url: # kanunu 1 & 2
-        if url.split('/')[-1] and url.split('/')[-1] != "index.html":
-            source = 'kanunu'
-        else:
-            source = 'kanunu1'
-    elif 'ty2016' in url:
-        source = 'ty2016'
-    elif 'dushu369' in url:
-        source = 'dushu369'
-    elif 'txshuku' in url:
-        source = 'txshuku'
-    elif 'sfacg' in url:
-        source = 'sfacg'
-    elif 'wenku8' in url:
-        source = 'wenku8'
-    elif '23qb' in url:
-        source = 'qb23'
-    return source
+
+def site_parse(source, url):
+    res = requests.get(url)
+    if source == "wenku8":
+        res.encoding = 'gbk'
+    elif source == "sfacg":
+        pass
+    else:
+        res.encoding = 'gb2312'
+    page = re.sub('&nbsp;', ' ', res.text)  # for all text in res, change &nbsp to ' '
+    soup = BeautifulSoup(page, 'html.parser')
+    return soup
 
 def parse_index(soup, source, url):
     index = support[source][1](url)
@@ -195,8 +209,7 @@ def parse_index(soup, source, url):
             support[source][0](all_chapter, href, index, source, url)
     return all_chapter
 
-# change it the same way as parse index
-# /html/body/div[1]/table/tbody/tr/td/table[3]/tbody/tr[3]/td
+
 def get_content(soup, source):
 
     if source in support:
@@ -214,9 +227,11 @@ def get_title_main(soup, source):
     if source in support:
         return support[source][3](soup)
 
+
 def get_title_chapter(soup, source):
     if source in support:
         return support[source][4](soup)
+
 
 def get_intro(soup, source, url):
     if source in support:
@@ -236,10 +251,16 @@ def get_intro(soup, source, url):
 def wenku8_intro(url):
     source = 'wenku8'
     new_url = "/".join(url.split('/')[:-3]).replace("novel", "book") + '/' + url.split('/')[-2] + '.htm'
-    res = requests.get(new_url)
-    res.encoding = 'gb2312'
-    page = re.sub('&nbsp;', ' ', res.text)  # for all text in res, change &nbsp to ' '
-    soup = BeautifulSoup(page, 'html.parser')
+
+    soup = site_parse(source, new_url)
+
+    # # REQUEST
+    # res = requests.get(new_url)
+    # res.encoding = 'gb2312'
+    # page = re.sub('&nbsp;', ' ', res.text)  # for all text in res, change &nbsp to ' '
+    # soup = BeautifulSoup(page, 'html.parser')
+    # # REQUEST
+
     return soup.find_all('span', {"style": "font-size:14px;"})[1].text
 
 
@@ -248,10 +269,16 @@ def get_author(soup, source, url):
         return support[source][6](soup)
     elif source == 'txshuku':
         indexurl = url.replace('dir','article')
-        res = requests.get(indexurl)
-        res.encoding = 'gb2312'
-        page = re.sub('&nbsp;', ' ', res.text)  # for all text in res, change &nbsp to ' '
-        soup = BeautifulSoup(page, 'html.parser')
+
+        soup = site_parse(source, indexurl)
+
+        # # REQUEST
+        # res = requests.get(indexurl)
+        # res.encoding = 'gb2312'
+        # page = re.sub('&nbsp;', ' ', res.text)  # for all text in res, change &nbsp to ' '
+        # soup = BeautifulSoup(page, 'html.parser')
+        # # REQUEST
+
         return support[source][6](soup)
     # TODO
     elif source == 'sfacg':
@@ -266,11 +293,17 @@ def get_epub_content(soup, folder, source, url):
     h0, h1, h20, h21,tail = st.content_header_0, st.content_header_1, st.h20, st.h21, st.tail
     title_dict = {}
     for link in all_chapters:
-        res = requests.get(link)
-        if source != "sfacg":
-            res.encoding = 'gb2312'
-        page = re.sub('&nbsp;', ' ', res.text)  # for all text in res, change &nbsp to ' '
-        soup = BeautifulSoup(page, 'html.parser')
+
+        soup = site_parse(source, link)
+
+        # # REQUEST
+        # res = requests.get(link)
+        # if source != "sfacg":
+        #     res.encoding = 'gb2312'
+        # page = re.sub('&nbsp;', ' ', res.text)  # for all text in res, change &nbsp to ' '
+        # soup = BeautifulSoup(page, 'html.parser')
+        # # REQUEST
+
         title = (get_title_chapter(soup, get_source(url)))
         title_dict[counter] = title
         content = get_content(soup, get_source(url))
@@ -371,11 +404,16 @@ def tocncx(chapter_dict, title, author, dirname):
 
 def build_epub(url):
     source = get_source(url)
-    res = requests.get(url)
-    if source != "sfacg":  # corner case, sfacg does not require encoding
-        res.encoding = 'gb2312'
-    page = re.sub('&nbsp;', ' ', res.text)  # for all text in res, change &nbsp to ' '
-    soup = BeautifulSoup(page, 'html.parser')
+
+    soup= site_parse(source, url)
+    # # REQUEST
+    # res = requests.get(url)
+    # if source != "sfacg":  # corner case, sfacg does not require encoding
+    #     res.encoding = 'gb2312'
+    # page = re.sub('&nbsp;', ' ', res.text)  # for all text in res, change &nbsp to ' '
+    # soup = BeautifulSoup(page, 'html.parser')
+    # # REQUEST
+
     logging.info("Getting title/ author/ intro information...")
     title = get_title_main(soup, source)
     print (title)
@@ -406,7 +444,7 @@ def build_epub(url):
 
     # create content.opf
     logging.info("Creating content.opf...")
-    source = get_source(url)
+    # source = get_source(url)
     source_site = support[source][7]
     source_url = support[source][8]
     contentopf(chapter_dict, title, author, intro, source_site, source_url, dirname)
@@ -454,24 +492,24 @@ if __name__ == "__main__":
     qb23 = 'https://www.23qb.com/book/3404/969333.html'
 
 
-    # build_epub(wenku8_index)
+    build_epub(wenku8_index)
 
     # Test each function
 
-    url = wenku8_index
-    source = get_source(url)
-    res = requests.get(url)
-    res.encoding = 'gb2312'
-    page = re.sub('&nbsp;', ' ', res.text)  # for all text in res, change &nbsp to ' '
-    soup = BeautifulSoup(page, 'html.parser')
-
+    # url = wenku8_index
+    # source = get_source(url)
+    # res = requests.get(url)
+    # res.encoding = 'gb2312'
+    # page = re.sub('&nbsp;', ' ', res.text)  # for all text in res, change &nbsp to ' '
+    # soup = BeautifulSoup(page, 'html.parser')
+    #
     # content = get_content(soup, source)
     # print (content)
     # title = get_title_main(soup, source)
     # print (title)
     # title = get_title_chapter(soup, source)
     # print(title)
-    print(get_intro(soup, source, url))
+    # print(get_intro(soup, source, url))
     # print (get_author(soup, source, url))
 
 
