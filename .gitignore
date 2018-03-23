@@ -1,4 +1,12 @@
-﻿scraper/epub/*
-scraper/__pycache__/*
-scraper/.idea/*
-/.idea/*
+﻿.git/*
+.idea/*
+build/
+dist/
+*.egg-info/
+*.egg
+*.py[cod]
+__pycache__/
+*.so
+*~
+.tox
+.cache
