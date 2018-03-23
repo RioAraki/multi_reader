@@ -49,7 +49,7 @@ px_h1 = "<?xml version='1.0' encoding='utf-8' standalone='no'?>\n<!DOCTYPE html 
             "\n.copyright{color:#ff4500}\n</style>\n</head>\n<body>\n<div>\n<h1>"
 px_h2 = "</h1>\n<h2>作者："
 px_h3 = "</h2>\n<ul>\n<li>内容简介："
-px_h4 ="</li>\n<li class='copyright'>由 multi_reader 开源项目提供epub下载，现支持将部分中文在线阅读网站的书库直接转成epub格式。\
+px_h4 ="</li>\n<li class='copyright'>由 epyb 开源项目提供 epub 下载，现支持将部分中文在线阅读网站的书库直接转成 epub 格式。\
     \n可访问 https://github.com/RioAraki/multi_reader 查看详情。\n欢迎 fork, star, 提 issue 等。</li>\n<li class='copyright'>书籍内容由"
 px_h5 = "提供，请访问："
 px_h6 = "</li>\n</ul>\n</div>\n</body>\n</html>"
@@ -70,3 +70,4 @@ toc_n2 = "' playOrder='"
 toc_n3 = "'><navLabel><text>"
 toc_n4 = "</text></navLabel><content src='chapter_"
 toc_n5 = ".xhtml'/></navPoint>\n"
+
