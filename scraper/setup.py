@@ -10,7 +10,7 @@ with open(path.join(here, 'README.rst'), encoding='utf-8') as f:
     
 setup(
     name = 'epyb',
-    version = '0.1.0',
+    version = '0.1.6',
     description = 'A tool which allows you to download books from certain websites and convert to epub for you automatically.',
     long_description= 'An integration of customer google search + web scraper for book site + epub convert.',
     url = 'https://rioaraki.github.io/epyb',
