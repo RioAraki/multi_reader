@@ -18,7 +18,7 @@ setup(
     author_email='yueee.li@mail.utoronto.ca',
     classifiers= [
         'Development Status :: 3 - Alpha',
-        'Intended Audience :: All',
+        'Intended Audience :: Information Technology',
         'Topic :: Internet :: WWW/HTTP :: Dynamic Content',
         'License :: OSI Approved :: MIT License',
         'Programming Language :: Python :: 3.6'
@@ -27,5 +27,5 @@ setup(
     packages = find_packages(), # TODO: research how it works
     install_requires=['requests',
                       'bs4',
-                      'googleapiclient']
+                      'google-api-python-client']
 )
