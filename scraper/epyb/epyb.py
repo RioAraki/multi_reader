@@ -3,10 +3,12 @@ from route import build_epub
 from compress import compress
 
 
-def create():
-    link = search_ask()
+def create(book_name):
+    if book_name == '':
+        book_name = input("Please enter a book's name: ")
+    link = search_ask(book_name)
     folder = build_epub(link)
     epub = compress(folder)
 
 if __name__ == '__main__':
-    create()
+    create(book_name='')

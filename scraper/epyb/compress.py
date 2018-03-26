@@ -26,6 +26,8 @@ def compress(name):
     os.chdir("..")
     shutil.rmtree(name)
     logging.info("Done")
+    cwd = os.getcwd()
+    print (cwd)
 
 if __name__ == '__main__':
     pass

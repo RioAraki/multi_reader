@@ -12,6 +12,10 @@ def search_ask(name):
         cx='006143628057480232827:4svfte2xdd4',
     ).execute()
 
+    if int(res['queries']['request'][0]['totalResults']) == 0:
+        print ('No result found')
+        return False
+
     for i in range(0,3):
         print ("{} -- Title:  {},  Link:  {}".format(i+1, res['items'][i]['title'], res['items'][i]['link']))
     print ("Here are the possible results we found, Type number 1/2/3 to choose the best fit one."
@@ -29,4 +33,4 @@ def check_validity(link):
 
 
 if __name__ == '__main__':
-    print(search_ask())
+    print(search_ask('skldfj'))
