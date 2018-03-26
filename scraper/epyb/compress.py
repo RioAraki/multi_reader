@@ -26,8 +26,13 @@ def compress(name):
     os.chdir("..")
     shutil.rmtree(name)
     logging.info("Done")
-    cwd = os.getcwd()
-    print (cwd)
+    # The idea is to move the file is certain folder after checking that folder does not contain the file
+    # cwd = os.getcwd()
+    #
+    # if not file_in_dir(os.path.join(cwd, "\\book")):
+    #     shutil.move(epub_name, os.path.join(cwd, "\\book"))
+
+
 
 if __name__ == '__main__':
     pass
