@@ -31,7 +31,7 @@ def compress(name):
     #
     # if not file_in_dir(os.path.join(cwd, "\\book")):
     #     shutil.move(epub_name, os.path.join(cwd, "\\book"))
-
+    return epub_name
 
 
 if __name__ == '__main__':
