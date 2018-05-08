@@ -5,6 +5,7 @@ dist/
 *.egg-info/
 *.egg
 *.py[cod]
+scraper/epyb/__pycache__/*
 scraper/__pycache__/*
 *.so
 *~
