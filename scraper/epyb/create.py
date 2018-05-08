@@ -8,7 +8,8 @@ def create(book_name):
         book_name = input("Please enter a book's name: ")
     link = search_ask(book_name)
     folder = build_epub(link)
-    epub = compress(folder)
+    real_name = compress(folder)
+    return real_name
 
 if __name__ == '__main__':
     create(book_name='')

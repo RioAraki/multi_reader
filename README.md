@@ -6,6 +6,13 @@ EPYB 可以将在线阅读网站上的小说资源自动爬取并转换成 epub 
 
 EPYB is a tool that allows you to search book name online and transfer the book to epub format for you automatically. It integrates a scraper and epub converter so you don't need to worry about any middleware. I am also working hard to support more and more online reading websites like https://www.kanunu8.com/ and http://www.ty2016.net/. Please feel free to tell me your favourite online reading site and I would consider to add it to the support list.
 
+# A new Django frontend
+
+A new Django front end is added for the project and is going to be hosted online in the future. It works rough but fine locally by calling
+```
+python manage.py runserver
+```
+at ...\scraper\EpybFront folder and the project is running in http://127.0.0.1:8000/
 
 # Supported Website List 2018-03-01
 
@@ -19,4 +26,5 @@ EPYB is a tool that allows you to search book name online and transfer the book 
 
 # Dependencies
   - requests
+  - beautifulsoup
   - googleclientapi

@@ -253,14 +253,6 @@ def wenku8_intro(url):
     new_url = "/".join(url.split('/')[:-3]).replace("novel", "book") + '/' + url.split('/')[-2] + '.htm'
 
     soup = site_parse(source, new_url)
-
-    # # REQUEST
-    # res = requests.get(new_url)
-    # res.encoding = 'gb2312'
-    # page = re.sub('&nbsp;', ' ', res.text)  # for all text in res, change &nbsp to ' '
-    # soup = BeautifulSoup(page, 'html.parser')
-    # # REQUEST
-
     return soup.find_all('span', {"style": "font-size:14px;"})[1].text
 
 
@@ -271,14 +263,6 @@ def get_author(soup, source, url):
         indexurl = url.replace('dir','article')
 
         soup = site_parse(source, indexurl)
-
-        # # REQUEST
-        # res = requests.get(indexurl)
-        # res.encoding = 'gb2312'
-        # page = re.sub('&nbsp;', ' ', res.text)  # for all text in res, change &nbsp to ' '
-        # soup = BeautifulSoup(page, 'html.parser')
-        # # REQUEST
-
         return support[source][6](soup)
     # TODO
     elif source == 'sfacg':
@@ -295,15 +279,6 @@ def get_epub_content(soup, folder, source, url):
     for link in all_chapters:
 
         soup = site_parse(source, link)
-
-        # # REQUEST
-        # res = requests.get(link)
-        # if source != "sfacg":
-        #     res.encoding = 'gb2312'
-        # page = re.sub('&nbsp;', ' ', res.text)  # for all text in res, change &nbsp to ' '
-        # soup = BeautifulSoup(page, 'html.parser')
-        # # REQUEST
-
         title = (get_title_chapter(soup, get_source(url)))
         title_dict[counter] = title
         content = get_content(soup, get_source(url))
