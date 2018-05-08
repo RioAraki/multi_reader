@@ -486,7 +486,7 @@ if __name__ == "__main__":
     sc = 'http://book.sfacg.com/Novel/108421/183067/1512447/'
 
     wenku8_index = 'http://www.wenku8.com/novel/2/2353/index.htm'
-    wenku8 = 'http://www.wenku8.com/novel/2/2353/86807.htm'
+    wenku8 = 'http://www.wenku8.com/novel/2/2353/86813.htm'
 
     qb23_index = 'https://www.23qb.com/book/3404/'
     qb23 = 'https://www.23qb.com/book/3404/969333.html'
@@ -496,12 +496,12 @@ if __name__ == "__main__":
 
     # Test each function
 
-    # url = wenku8_index
-    # source = get_source(url)
-    # res = requests.get(url)
-    # res.encoding = 'gb2312'
-    # page = re.sub('&nbsp;', ' ', res.text)  # for all text in res, change &nbsp to ' '
-    # soup = BeautifulSoup(page, 'html.parser')
+    url = wenku8
+    source = get_source(url)
+    res = requests.get(url)
+    res.encoding = 'gb2312'
+    page = re.sub('&nbsp;', ' ', res.text)  # for all text in res, change &nbsp to ' '
+    soup = BeautifulSoup(page, 'html.parser')
     #
     # content = get_content(soup, source)
     # print (content)
