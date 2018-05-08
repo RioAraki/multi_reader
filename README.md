@@ -1,3 +1,8 @@
+# TODO：
+- [ ] Allow epub to show image locally (cover and illustration).
+- [ ] Study about epub and understand how to customize the style.
+- [ ] Make a **stable** and  **scalable** online service
+
 # Multi_reader -> EPYB
 
 EPYB 可以将在线阅读网站上的小说资源自动爬取并转换成 epub 格式。本质上是一个搜索器 + 爬虫 + EPUB 转换器的集合，帮助用户一步到位将可以在线阅读的书籍变成 epub。目前只支持一些特定的网站比如 [努努书坊](https://www.kanunu8.com/) 和 [天涯书库](http://www.ty2016.net/) ，但以后会支持更多。欢迎告诉我你希望能够支持的在线阅读网站，目前正在逐步支持。欢迎 fork, star, 提 pr/ issue!
