@@ -103,8 +103,7 @@ def qb23():
 
 ##############################
 
-# Support provides all info about different supported site, the orders are:
-# site name (correspond to different method to extract chapter link)/ index/ content/ book title/ chapter title/ intro/ author/ site name string/ site url
+# Support uses a dict to contain all info about different sites, the orders are:
 support = {'kanunu': [kanunu,
                       lambda url : url.split('/')[-1].split('.')[0], # index in url
                       lambda soup: str(soup.find_all('p')[0]), # content
@@ -236,11 +235,6 @@ def get_title_chapter(soup, source):
 def get_intro(soup, source, url):
     if source in support:
         if source == 'sfacg':
-            # pos = url.index('MainIndex')
-            # url = url[:pos]
-            # res = requests.get(url)
-            # page = re.sub('&nbsp;', ' ', res.text)  # for all text in res, change &nbsp to ' '
-            # soup = BeautifulSoup(page, 'html.parser')
             return "SFACG: 尚无法获得作品简介"  # support[source][5](soup)
         elif source == 'wenku8':
             return wenku8_intro(url)
@@ -299,6 +293,10 @@ def META_INF(dirname):
     with open(containxml_path, "w") as f:
         f.write(meta_inf_content)
         f.close()
+
+def Images(dirname):
+    images_dir = dirname + '/Images'
+    os.makedirs(images_dir, exist_ok=True)
 
 
 def catalogxhtml(chapter_dict, title, dirname):
@@ -407,6 +405,9 @@ def build_epub(url):
     # TODO: a better way might be have a META-INF folder ready and copy it to other epub folders since META-INF never changes
     logging.info("Creating META_INF file...")
     META_INF(dirname)
+
+    # create folder for images
+    Images(dirname)
 
     # create catelog.xhtml
     logging.info("Creating catelog.xhtml...")

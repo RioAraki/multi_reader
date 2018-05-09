@@ -1,6 +1,6 @@
 A note to remind me knowledges about epubs. It does not include all details, just those I did not quite familiar with. For original resource please refers to https://zhuanlan.zhihu.com/p/29954562
 
-# Epub organization
+# Epub Structure
 ```
 XXX.epub
 | mimetype
@@ -44,9 +44,9 @@ This file would **direct** the parser to the package file `content.opf`. Every e
 
 As mentioned before, `opf` shorts for open package formats which is essentially an xml file. It normally contains 5 parts:
 
-- The package element: it is the biggest container which contains all other elements in the file. The package element has an important property called `unique-identifier=book-id` which could be used to identify a book.
+- package element: it is the biggest container which contains all other elements in the file. The package element has an important property called `unique-identifier=book-id` which could be used to identify a book.
 
-- The metadata element: As the name suggests, used to save metadata including:
+- metadata element: As the name suggests, used to save metadata including:
     - language
     - title
     - author
@@ -57,4 +57,16 @@ As mentioned before, `opf` shorts for open package formats which is essentially 
     - contributor
     - source
     - rights
-These metadata could be used on book's cover or frontpage to display related information.
+    
+- Manifest element
+manifest provides a detailed list of the source files we need for an epub file. Each listed in `item` element. The order of `item` does not matter. Items would contain three properties which are `id` (name of the file), `href` (path of the file) and `media-type` (MIMETYPE).
+
+- Spine element
+Spine element defines the reading order of epub.
+
+- Guide element
+Guide element provide syntactic information to specify the cover, foreword or so.
+
+### toc.ncx
+
+toc.ncx is replaced by nav.xhtml in opf2 standard, for compatibility we could still add toc.ncx.
