@@ -12,6 +12,7 @@ def zipdir(path, ziph, name):
     # This method only copy all *files*
     for root, dirs, files in os.walk(path):
         os.chdir(name)
+        # TODO: More folders to be compressed
         ziph.write('META-INF/container.xml')
         for file in files:
             ziph.write(file)
