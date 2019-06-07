@@ -1,5 +1,6 @@
 ﻿.git/*
 .idea/*
+scraper/.idea/*
 build/
 dist/
 *.egg-info/

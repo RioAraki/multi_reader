@@ -12,4 +12,4 @@ def create(book_name):
     return real_name
 
 if __name__ == '__main__':
-    create(book_name='')
+    create(book_name='朝闻道')

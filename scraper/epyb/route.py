@@ -252,7 +252,10 @@ def wenku8_intro(url):
 
 def get_author(soup, source, url):
     if source != 'txshuku' and source != 'sfacg' and source in support:
-        return support[source][6](soup)
+        try:
+            return support[source][6](soup)
+        except:
+            return "Error retrieving author"
     elif source == 'txshuku':
         indexurl = url.replace('dir','article')
 
